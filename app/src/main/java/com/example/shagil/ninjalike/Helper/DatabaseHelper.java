@@ -1,8 +1,18 @@
 package com.example.shagil.ninjalike.Helper;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.example.shagil.ninjalike.QuizQuestion;
+import com.example.shagil.ninjalike.QuizQuestions;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Queue;
 
 /**
  * Created by shagil on 25/5/17.
@@ -18,6 +28,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String USERS_TABLE_CUR_LEVEL="user_cur_level";
     private static final String USERS_TABLE_ACH_LEVEL="user_achieve_levels";
     private static final String SKILLS_TABLE="skills_table";
+    private static final String QUESTIONS_TABLE="questions";
+    private static final String OPTIONS_TABLE="options";
+
 
     private static final String USERNAME="username";
     private static final String PASSWORD="password";
@@ -30,14 +43,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String SKILLS="skills";
     private static final String SKILL_IMAGE="skill_image";
 
+    private static final String QID="qid";
+    private static final String QUESTION="question";
+    private static final String CORRECTANS="corr_ans";
+
+    private static final String OPTION1="option1";
+    private static final String OPTION2="option2";
+    private static final String OPTION3="option3";
+    private static final String OPTION4="option4";
+
     private static final String TABLE_USERS="CREATE TABLE IF NOT EXISTS "+USERS_TABLE+" ("+USERNAME+" TEXT PRIMARY KEY,"+PASSWORD+" TEXT"+")";
-    private static final String TABLE_USER_CUR_LEVEL="CREATE TABLE IF NOT EXISTS "+USERS_TABLE_CUR_LEVEL+" ("+USERNAME+" TEXT,"+CURRENT_LEVEL+" TEXT,"+"FOREIGN KEY ("+USERNAME+") REFERENCES "+
-            TABLE_USERS+" ("+USERNAME+"), FOREIGN KEY ("+CURRENT_LEVEL+") REFERENCES "+ SKILLS_TABLE+" ("+SKILLS+")"+")";
+    private static final String TABLE_USER_CUR_LEVEL="CREATE TABLE IF NOT EXISTS "+USERS_TABLE_CUR_LEVEL+" ("+USERNAME+" TEXT UNIQUE,"+CURRENT_LEVEL+" TEXT,"+"FOREIGN KEY ("+USERNAME+") REFERENCES "+
+            USERS_TABLE+" ("+USERNAME+"), FOREIGN KEY ("+CURRENT_LEVEL+") REFERENCES "+ SKILLS_TABLE+" ("+SKILLS+")"+")";
     private static final String TABLE_USER_ACHEIVE_LEVELS="CREATE TABLE IF NOT EXISTS "+USERS_TABLE_ACH_LEVEL+" ("+USERNAME+" TEXT,"+ACHIEVED_LEVELS+" TEXT,"+"FOREIGN KEY ("+USERNAME+") REFERENCES "+
-            TABLE_USERS+"   ("+USERNAME+"), "+"FOREIGN KEY ("+ACHIEVED_LEVELS+") REFERENCES "+ SKILLS_TABLE+" ("+SKILLS+")"+")";
-    private static final String TABLE_SKILLS_TABLE="CREATE TABLE IF NOT EXISTS "+SKILLS_TABLE+" ("+SKILLS+" TEXT PRIMARY KEY,"+SKILL_IMAGE+ "BLOB "+")";
-
-
+            USERS_TABLE+"   ("+USERNAME+"), "+"FOREIGN KEY ("+ACHIEVED_LEVELS+") REFERENCES "+ SKILLS_TABLE+" ("+SKILLS+")"+")";
+    private static final String TABLE_SKILLS_TABLE="CREATE TABLE IF NOT EXISTS "+SKILLS_TABLE+" ("+SKILLS+" TEXT PRIMARY KEY,"+SKILL_IMAGE+ " BLOB "+")";
+    private static final String TABLE_QUESTIONS_TABLE="CREATE TABLE IF NOT EXISTS "+QUESTIONS_TABLE+" ("+QID+" INTEGER PRIMARY KEY AUTOINCREMENT,"+QUESTION+" TEXT,"+
+            CORRECTANS+" TEXT,"+SKILLS+" TEXT, "+"FOREIGN KEY ("+SKILLS+") REFERENCES "+SKILLS_TABLE+" ("+SKILLS+")"+")";
+    private static final String TABLE_OPTIONS_TABLE="CREATE TABLE IF NOT EXISTS "+OPTIONS_TABLE+" ("+QID+" INTEGER PRIMARY KEY AUTOINCREMENT,"+OPTION1+" TEXT,"+
+            OPTION2+" TEXT,"+OPTION3+" TEXT,"+OPTION4+" TEXT, "+"FOREIGN KEY ("+QID+") REFERENCES "+QUESTIONS_TABLE+" ("+QID+")"+")";
 
 
     public DatabaseHelper(Context context) {
@@ -51,11 +75,116 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
+        db.execSQL(TABLE_USERS);
+        db.execSQL(TABLE_USER_CUR_LEVEL);
+        db.execSQL(TABLE_USER_ACHEIVE_LEVELS);
+        db.execSQL(TABLE_SKILLS_TABLE);
+        db.execSQL(TABLE_QUESTIONS_TABLE);
+        db.execSQL(TABLE_OPTIONS_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_USERS);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_USER_CUR_LEVEL);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_USER_ACHEIVE_LEVELS);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_SKILLS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_QUESTIONS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_OPTIONS_TABLE);
+        onCreate(db);
+    }
 
+    public void createUser(String userName, String password) {
+        SQLiteDatabase db=this.getWritableDatabase();
+        String insertIntoUsers="INSERT INTO "+USERS_TABLE+" ("+USERNAME+", "+PASSWORD+") VALUES ('"+userName+"', '"+password+"')";
+        //String insertIntoUserCurLevel="INSERT INTO "+USERS_TABLE_CUR_LEVEL+" ("+USERNAME+", "+CURRENT_LEVEL+") VALUES ("+
+        db.execSQL(insertIntoUsers);
+        db.close();
+    }
+
+    public boolean checkCredentials(String username, String password) {
+        String selectUsers="SELECT "+USERNAME+", "+PASSWORD+" FROM "+USERS_TABLE+" WHERE "+USERNAME+" = '"+username+"' AND "+PASSWORD+
+                " = '"+password+"'";
+        SQLiteDatabase db=this.getReadableDatabase();
+        Cursor c=db.rawQuery(selectUsers,null);
+        if (c.moveToNext()) {
+
+            return true;
+        }
+        else
+            return false;
+
+    }
+
+    public void insertLevels(String level, byte[] bitMapData) {
+        SQLiteDatabase db=this.getWritableDatabase();
+        ContentValues cv=new ContentValues();
+        cv.put(SKILLS,level);
+        cv.put(SKILL_IMAGE,bitMapData);
+        db.insert(SKILLS_TABLE,null,cv);
+        db.close();
+    }
+
+    public String[] getLevels() {
+        String getlevel="SELECT "+SKILLS+" FROM "+SKILLS_TABLE;
+        SQLiteDatabase db=this.getReadableDatabase();
+        Cursor c=db.rawQuery(getlevel,null);
+        String[] level=new String[c.getCount()];
+        int i=0;
+        if (c.moveToFirst()){
+            do{
+                level[i++]=c.getString(0);
+            }while (c.moveToNext());
+        }
+        db.close();
+        return level;
+    }
+
+    public void insertQuestions() {
+        QuizQuestions quizQuestions=new QuizQuestions();
+        List<QuizQuestion> quizQuestionsList=quizQuestions.getQuizQuestions();
+        SQLiteDatabase db=this.getWritableDatabase();
+        ContentValues cv=new ContentValues();
+
+        for (int i=0;i<quizQuestionsList.size();i++){
+            cv.put(QID,i);
+            cv.put(QUESTION,quizQuestionsList.get(i).getQuestion() );
+            cv.put(CORRECTANS,quizQuestionsList.get(i).getCorrectAnswer());
+            cv.put(SKILLS,quizQuestionsList.get(i).getLevel());
+            db.insert(QUESTIONS_TABLE,null,cv);
+
+        }
+        ContentValues cv1=new ContentValues();
+        for (int i=0;i<quizQuestionsList.size();i++){
+            String[] answers=quizQuestionsList.get(i).getAnswers();
+            cv1.put(QID,i);
+            cv1.put(OPTION1,answers[0]);
+            cv1.put(OPTION2,answers[1]);
+            cv1.put(OPTION3,answers[2]);
+            cv1.put(OPTION3,answers[3]);
+            db.insert(OPTIONS_TABLE,null,cv);
+        }
+        db.close();
+    }
+
+    public void createTempSkillTable(CharSequence text) {
+        String TEMP_QUESTION_TABLE="CREATE TABLE IF NOT EXISTS "+QUESTIONS_TABLE+" ("+QID+" INTEGER PRIMARY KEY AUTOINCREMENT,"+QUESTION+" TEXT,"+
+                CORRECTANS+" TEXT,"+SKILLS+" TEXT, "+"FOREIGN KEY ("+SKILLS+") REFERENCES "+SKILLS_TABLE+" ("+SKILLS+")"+")";
+    }
+
+
+    public List<QuizQuestion> getQuestionOfSkill(String skill) {
+        List<QuizQuestion> quizQuestions = new ArrayList<>();
+
+        for (int i=0;i<questions.length;i++){
+            String[] answers={
+                    option1[i],
+                    option2[i],
+                    option3[i],
+                    option4[i]};
+            QuizQuestion quizQuestion=new QuizQuestion(questions[i],correctAnswer[i],"C++",answers);
+            quizQuestions.add(quizQuestion);
+        }
+        return quizQuestions;
     }
 }
