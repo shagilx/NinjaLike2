@@ -29,11 +29,11 @@ public class ChooseSkillsActivity extends AppCompatActivity {
 
         nextButton=(Button)findViewById(R.id.skill_button);
 
-        DatabaseHelper dbHelper=new DatabaseHelper(getApplicationContext());
+        DatabaseHelper dbHelper=new DatabaseHelper(this);
         String[] levels=dbHelper.getLevels();
 
-        // insertLevels();
-        // insertQuestions();
+//         insertLevels();
+//         insertQuestions();
 
         LinearLayout linearLayout=(LinearLayout)findViewById(R.id.chooseSkillsLayout);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -42,7 +42,6 @@ public class ChooseSkillsActivity extends AppCompatActivity {
 
         final RadioGroup rg=new RadioGroup(this);
         rg.setOrientation(LinearLayout.VERTICAL);
-        DatabaseHelper db=new DatabaseHelper(this);
         for (int i=0;i<levels.length;i++) {
             String url="levelRadioButton"+(i);
 
@@ -98,6 +97,4 @@ public class ChooseSkillsActivity extends AppCompatActivity {
             db.insertLevels(levels[i],bitMapData);
         }
     }
-
-
 }

@@ -203,9 +203,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 if (c1!=null && c1.moveToFirst()) {
                     Log.v("options", String.valueOf(c1.getString(3)));
                     String option1 = c1.getString(0);
+                    Log.v("Answers", c1.getString(0));
                     String option2 = c1.getString(1);
+                    Log.v("Answers", c1.getString(1));
                     String option3 = c1.getString(2);
+                    Log.v("Answers", c1.getString(2));
                     String option4 = c1.getString(3);
+                    Log.v("Answers", c1.getString(3));
                     String[] answers = {option1, option2, option3, option4};
                     quizQuestion.setAnswers(answers);
                     quizQuestionList.add(quizQuestion);

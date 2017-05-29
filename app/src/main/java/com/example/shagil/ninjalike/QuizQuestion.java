@@ -38,6 +38,9 @@ public class QuizQuestion {
     public void setCorrectAnswer(String correctAnswer) {
         this.correctAnswer = correctAnswer;
     }
+    public String getLocalCorrectAnswer(){
+        return correctAnswer;
+    }
 
     public void setLevel(String level) {
         this.level = level;
