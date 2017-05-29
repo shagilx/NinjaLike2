@@ -18,7 +18,7 @@ import java.io.ByteArrayOutputStream;
 public class LoginActivity extends AppCompatActivity {
     EditText userNameText,passwordText;
     Button loginButton,signUpButton;
-    public static final String[] levels={"C","C++","Python","Java"};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +29,7 @@ public class LoginActivity extends AppCompatActivity {
         loginButton=(Button)findViewById(R.id.Loginbutton);
         signUpButton=(Button)findViewById(R.id.gotosignupbutton);
 
-        //insertLevels();
-       // insertQuestions();
+
 
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,22 +58,4 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void insertQuestions() {
-        DatabaseHelper db=new DatabaseHelper(getApplicationContext());
-        db.insertQuestions();
-    }
-
-    private void insertLevels() {
-         for (int i=0;i<levels.length;i++) {
-            DatabaseHelper db=new DatabaseHelper(getApplicationContext());
-            String url="drawable/"+"level_"+(i+1);
-
-            int imageKey=getResources().getIdentifier(url,"drawable",getPackageName());
-            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), imageKey);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            byte[] bitMapData = stream.toByteArray();
-            db.insertLevels(levels[i],bitMapData);
-        }
-    }
 }

@@ -1,6 +1,8 @@
 package com.example.shagil.ninjalike;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,8 +16,11 @@ import android.widget.Toast;
 
 import com.example.shagil.ninjalike.Helper.DatabaseHelper;
 
+import java.io.ByteArrayOutputStream;
+
 public class ChooseSkillsActivity extends AppCompatActivity {
     Button nextButton;
+    public static final String[] levels={"C","C++","Python","Java"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +31,9 @@ public class ChooseSkillsActivity extends AppCompatActivity {
 
         DatabaseHelper dbHelper=new DatabaseHelper(getApplicationContext());
         String[] levels=dbHelper.getLevels();
+
+        // insertLevels();
+        // insertQuestions();
 
         LinearLayout linearLayout=(LinearLayout)findViewById(R.id.chooseSkillsLayout);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -70,6 +78,25 @@ public class ChooseSkillsActivity extends AppCompatActivity {
 
 
 
+    }
+
+    private void insertQuestions() {
+        DatabaseHelper db=new DatabaseHelper(getApplicationContext());
+        db.insertQuestions();
+    }
+
+    private void insertLevels() {
+        for (int i=0;i<levels.length;i++) {
+            DatabaseHelper db=new DatabaseHelper(getApplicationContext());
+            String url="drawable/"+"level_"+(i+1);
+
+            int imageKey=getResources().getIdentifier(url,"drawable",getPackageName());
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), imageKey);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] bitMapData = stream.toByteArray();
+            db.insertLevels(levels[i],bitMapData);
+        }
     }
 
 

@@ -5,14 +5,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.shagil.ninjalike.QuizQuestion;
 import com.example.shagil.ninjalike.QuizQuestions;
 
+import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
+import java.util.StringTokenizer;
 
 /**
  * Created by shagil on 25/5/17.
@@ -145,24 +148,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<QuizQuestion> quizQuestionsList=quizQuestions.getQuizQuestions();
         SQLiteDatabase db=this.getWritableDatabase();
         ContentValues cv=new ContentValues();
-
+        ContentValues cv1=new ContentValues();
         for (int i=0;i<quizQuestionsList.size();i++){
             cv.put(QID,i);
             cv.put(QUESTION,quizQuestionsList.get(i).getQuestion() );
             cv.put(CORRECTANS,quizQuestionsList.get(i).getCorrectAnswer());
-            cv.put(SKILLS,quizQuestionsList.get(i).getLevel());
-            db.insert(QUESTIONS_TABLE,null,cv);
 
-        }
-        ContentValues cv1=new ContentValues();
-        for (int i=0;i<quizQuestionsList.size();i++){
+            cv.put(SKILLS,quizQuestionsList.get(i).getLevel());
+
             String[] answers=quizQuestionsList.get(i).getAnswers();
             cv1.put(QID,i);
             cv1.put(OPTION1,answers[0]);
+            Log.v("option1",answers[0]);
+
             cv1.put(OPTION2,answers[1]);
+            Log.v("option2",answers[1]);
+
             cv1.put(OPTION3,answers[2]);
-            cv1.put(OPTION3,answers[3]);
-            db.insert(OPTIONS_TABLE,null,cv);
+            Log.v("option3",answers[2]);
+
+            cv1.put(OPTION4,answers[3]);
+            Log.v("option4",answers[3]);
+
+            db.insert(QUESTIONS_TABLE,null,cv);
+            db.insert(OPTIONS_TABLE,null,cv1);
+
         }
         db.close();
     }
@@ -174,17 +184,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     public List<QuizQuestion> getQuestionOfSkill(String skill) {
-        List<QuizQuestion> quizQuestions = new ArrayList<>();
+        List<QuizQuestion> quizQuestionList = new ArrayList<>();
+        SQLiteDatabase db=this.getReadableDatabase();
+        String getQuestion="SELECT Q."+QID+", Q."+QUESTION+", Q."+CORRECTANS+" FROM "+QUESTIONS_TABLE+ " Q WHERE Q."+SKILLS+" = '"+skill+"'";
 
-        for (int i=0;i<questions.length;i++){
-            String[] answers={
-                    option1[i],
-                    option2[i],
-                    option3[i],
-                    option4[i]};
-            QuizQuestion quizQuestion=new QuizQuestion(questions[i],correctAnswer[i],"C++",answers);
-            quizQuestions.add(quizQuestion);
+        Cursor c=db.rawQuery(getQuestion,null);
+        Log.v("Cursor",String.valueOf(c.getCount()));
+
+        if (c.moveToFirst()){
+            do {
+                QuizQuestion quizQuestion=new QuizQuestion();
+
+                String selectOptions="SELECT O."+OPTION1+", O."+OPTION2+", O."+OPTION3+", O."+OPTION4+" FROM "+OPTIONS_TABLE+ " O WHERE O."+QID+" = "+c.getInt(0);
+                Cursor c1=db.rawQuery(selectOptions,null);
+                quizQuestion.setQuestion(c.getString(1));
+                quizQuestion.setCorrectAnswer(c.getString(2));
+                Log.v("correct",c.getString(2));
+                if (c1!=null && c1.moveToFirst()) {
+                    Log.v("options", String.valueOf(c1.getString(3)));
+                    String option1 = c1.getString(0);
+                    String option2 = c1.getString(1);
+                    String option3 = c1.getString(2);
+                    String option4 = c1.getString(3);
+                    String[] answers = {option1, option2, option3, option4};
+                    quizQuestion.setAnswers(answers);
+                    quizQuestionList.add(quizQuestion);
+                }while (c1.moveToNext());
+            }while (c.moveToNext());
+
         }
-        return quizQuestions;
+        return quizQuestionList;
     }
+
 }
