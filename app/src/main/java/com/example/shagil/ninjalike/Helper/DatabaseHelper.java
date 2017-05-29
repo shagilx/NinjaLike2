@@ -58,7 +58,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_USERS="CREATE TABLE IF NOT EXISTS "+USERS_TABLE+" ("+USERNAME+" TEXT PRIMARY KEY,"+PASSWORD+" TEXT"+")";
     private static final String TABLE_USER_CUR_LEVEL="CREATE TABLE IF NOT EXISTS "+USERS_TABLE_CUR_LEVEL+" ("+USERNAME+" TEXT UNIQUE,"+CURRENT_LEVEL+" TEXT,"+"FOREIGN KEY ("+USERNAME+") REFERENCES "+
             USERS_TABLE+" ("+USERNAME+"), FOREIGN KEY ("+CURRENT_LEVEL+") REFERENCES "+ SKILLS_TABLE+" ("+SKILLS+")"+")";
-    private static final String TABLE_USER_ACHEIVE_LEVELS="CREATE TABLE IF NOT EXISTS "+USERS_TABLE_ACH_LEVEL+" ("+USERNAME+" TEXT,"+ACHIEVED_LEVELS+" TEXT,"+"FOREIGN KEY ("+USERNAME+") REFERENCES "+
+    private static final String TABLE_USER_ARCHIEVE_LEVELS="CREATE TABLE IF NOT EXISTS "+USERS_TABLE_ACH_LEVEL+" ("+USERNAME+" TEXT,"+ACHIEVED_LEVELS+" TEXT,"+"FOREIGN KEY ("+USERNAME+") REFERENCES "+
             USERS_TABLE+"   ("+USERNAME+"), "+"FOREIGN KEY ("+ACHIEVED_LEVELS+") REFERENCES "+ SKILLS_TABLE+" ("+SKILLS+")"+")";
     private static final String TABLE_SKILLS_TABLE="CREATE TABLE IF NOT EXISTS "+SKILLS_TABLE+" ("+SKILLS+" TEXT PRIMARY KEY,"+SKILL_IMAGE+ " BLOB "+")";
     private static final String TABLE_QUESTIONS_TABLE="CREATE TABLE IF NOT EXISTS "+QUESTIONS_TABLE+" ("+QID+" INTEGER PRIMARY KEY AUTOINCREMENT,"+QUESTION+" TEXT,"+
@@ -80,7 +80,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(TABLE_USERS);
         db.execSQL(TABLE_USER_CUR_LEVEL);
-        db.execSQL(TABLE_USER_ACHEIVE_LEVELS);
+        db.execSQL(TABLE_USER_ARCHIEVE_LEVELS);
         db.execSQL(TABLE_SKILLS_TABLE);
         db.execSQL(TABLE_QUESTIONS_TABLE);
         db.execSQL(TABLE_OPTIONS_TABLE);
@@ -90,7 +90,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_USERS);
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_USER_CUR_LEVEL);
-        db.execSQL("DROP TABLE IF EXISTS "+TABLE_USER_ACHEIVE_LEVELS);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_USER_ARCHIEVE_LEVELS);
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_SKILLS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_QUESTIONS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_OPTIONS_TABLE);
@@ -100,7 +100,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void createUser(String userName, String password) {
         SQLiteDatabase db=this.getWritableDatabase();
         String insertIntoUsers="INSERT INTO "+USERS_TABLE+" ("+USERNAME+", "+PASSWORD+") VALUES ('"+userName+"', '"+password+"')";
-        //String insertIntoUserCurLevel="INSERT INTO "+USERS_TABLE_CUR_LEVEL+" ("+USERNAME+", "+CURRENT_LEVEL+") VALUES ("+
+       // String insertIntoUserCurLevel="INSERT INTO "+USERS_TABLE_CUR_LEVEL+" ("+USERNAME+", "+CURRENT_LEVEL+") VALUES ('"+userName+"','"
         db.execSQL(insertIntoUsers);
         db.close();
     }

@@ -21,7 +21,6 @@ import java.util.List;
 
 public class QuizActivity extends AppCompatActivity {
     static int qNo=0;
-    static int i;
     ArrayList<Integer> incorrectAns;
     TextView qno,question;
     Button submitButton;
@@ -44,9 +43,9 @@ public class QuizActivity extends AppCompatActivity {
         DatabaseHelper db = new DatabaseHelper(getApplicationContext());
         quizQuestionList = db.getQuestionOfSkill(skill);
         for (int i=qNo;i<quizQuestionList.size();i++){
-            incorrectAns.add(qNo,qNo);
+            incorrectAns.add(i,i);
         }
-        Log.v("Incorrect",String.valueOf(incorrectAns.size()));
+        Log.v("Incorrect",String.valueOf(incorrectAns.toString()));
 
         rg = (RadioGroup) findViewById(R.id.optionRadioGroup);
         option1 = (RadioButton) findViewById(R.id.option1);
@@ -54,44 +53,49 @@ public class QuizActivity extends AppCompatActivity {
         option3 = (RadioButton) findViewById(R.id.option3);
         option4 = (RadioButton) findViewById(R.id.option4);
 
-        getNextQuestion(qNo++);
+            getNextQuestion(incorrectAns.get(0));
+
+
     }
 
 
     private void getNextQuestion(final int qNum) {
 
 
-            rg.clearCheck();
-            qno.setText(String.valueOf(i + 1));
-            question.setText(quizQuestionList.get(qNum).getQuestion());
-            option1.setText(quizQuestionList.get(qNum).getAnswers()[0]);
-            option2.setText(quizQuestionList.get(qNum).getAnswers()[1]);
-            option3.setText(quizQuestionList.get(qNum).getAnswers()[2]);
-            option4.setText(quizQuestionList.get(qNum).getAnswers()[3]);
+        rg.clearCheck();
+        qno.setText(String.valueOf(qNum + 1));
+        question.setText(quizQuestionList.get(qNum).getQuestion());
+        option1.setText(quizQuestionList.get(qNum).getAnswers()[0]);
+        option2.setText(quizQuestionList.get(qNum).getAnswers()[1]);
+        option3.setText(quizQuestionList.get(qNum).getAnswers()[2]);
+        option4.setText(quizQuestionList.get(qNum).getAnswers()[3]);
 
-            submitButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    RadioButton radioButton;
-                    int selectedId = rg.getCheckedRadioButtonId();
-                    radioButton = (RadioButton) findViewById(selectedId);
-                    if (radioButton != null) {
-                        if (radioButton.getText().toString().equals(quizQuestionList.get(qNum).getLocalCorrectAnswer())) {
-                            Toast.makeText(getApplicationContext(), "Correct Answer", Toast.LENGTH_SHORT).show();
-//                            incorrectAns.remove(qNum);
-                            score += 4;
-                            getNextQuestion(++qNo);
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Incorrect Answer", Toast.LENGTH_SHORT).show();
-                            score -= 1;
-                            getNextQuestion(++qNo);
-                        }
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RadioButton radioButton;
+                int selectedId = rg.getCheckedRadioButtonId();
+                radioButton = (RadioButton) findViewById(selectedId);
+                if (radioButton != null) {
+                    if (radioButton.getText().toString().equals(quizQuestionList.get(qNum).getLocalCorrectAnswer())) {
+                        Toast.makeText(getApplicationContext(), "Correct Answer", Toast.LENGTH_SHORT).show();
+                        incorrectAns.remove(0);
+                        Log.v("Incorrect",incorrectAns.toString());
+                        score += 4;
+                        getNextQuestion(incorrectAns.get(0));
+
                     } else {
-                        Toast.makeText(getApplicationContext(), "Please select an Option", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Incorrect Answer", Toast.LENGTH_SHORT).show();
+                        score -= 1;
+                        Log.v("Incorrect",incorrectAns.toString());
+                        getNextQuestion(incorrectAns.get(1));
                     }
-
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please select an Option", Toast.LENGTH_SHORT).show();
                 }
-            });
 
-        }
+            }
+        });
+
     }
+}
