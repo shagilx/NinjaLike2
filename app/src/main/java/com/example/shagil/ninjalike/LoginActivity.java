@@ -18,7 +18,7 @@ import java.io.ByteArrayOutputStream;
 public class LoginActivity extends AppCompatActivity {
     EditText userNameText,passwordText;
     Button loginButton,signUpButton;
-
+    public static String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +48,8 @@ public class LoginActivity extends AppCompatActivity {
                 boolean valid=dbHelper.checkCredentials(username,password);
                 if (valid){
                     Intent intent=new Intent(LoginActivity.this,ChooseSkillsActivity.class);
-                    intent.putExtra("username",username);
+                    userName=username;
+                    //intent.putExtra("username",username);
                     startActivity(intent);
                     finish();
                 }else{

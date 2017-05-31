@@ -5,6 +5,7 @@ package com.example.shagil.ninjalike;
  */
 
 public class QuizQuestion {
+    private int qid;
     private int correctAnswerIndex;
     private String correctAnswer;
     private String level;
@@ -12,6 +13,7 @@ public class QuizQuestion {
     private String question;
 
     private String[] answers;
+
 
     public QuizQuestion() {
     }
@@ -24,11 +26,21 @@ public class QuizQuestion {
         this.level=level;
     }
 
-    public QuizQuestion(String question, String correctAnswer, String skill, String[] answers) {
+    public QuizQuestion(int qid, int correctAnswerIndex, String correctAnswer, String level, String question, String[] answers) {
+        this.qid = qid;
+        this.correctAnswerIndex = correctAnswerIndex;
+        this.correctAnswer = correctAnswer;
+        this.level = level;
         this.question = question;
         this.answers = answers;
-        this.correctAnswer= correctAnswer;
+    }
 
+    public int getQid() {
+        return qid;
+    }
+
+    public void setQid(int qid) {
+        this.qid = qid;
     }
 
     public void setCorrectAnswerIndex(int correctAnswerIndex) {

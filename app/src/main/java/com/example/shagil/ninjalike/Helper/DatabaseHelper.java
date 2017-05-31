@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.example.shagil.ninjalike.LoginActivity;
 import com.example.shagil.ninjalike.QuizQuestion;
 import com.example.shagil.ninjalike.QuizQuestions;
 
@@ -220,4 +221,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return quizQuestionList;
     }
 
+    public void createLevelSolvedTable(CharSequence text) {
+        //String createTable="DROP TABLE `"+ LoginActivity.userName+"_"+text+"`";
+        String createTable="CREATE TABLE IF NOT EXISTS `"+ LoginActivity.userName+"_"+text+"` ("+USERNAME+" text, "+QID+" text, "+" solved text default 'false' )";
+        SQLiteDatabase db=this.getWritableDatabase();
+        db.execSQL(createTable);
+        Log.v("SolvedTable","table created");
+
+    }
+
+    public void insertIntoLevelSolvedTable(String solved, String skill, int qid) {
+        String insertIntoTable="INSERT INTO `"+LoginActivity.userName+"_"+skill+"` values ('"+LoginActivity.userName+"','"+qid+"', '"+solved+"')";
+        SQLiteDatabase db=this.getWritableDatabase();
+        db.execSQL(insertIntoTable);
+        Log.v("InsertIntoSolved","inserted");
+    }
 }

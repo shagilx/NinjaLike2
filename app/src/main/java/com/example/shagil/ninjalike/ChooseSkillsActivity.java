@@ -64,6 +64,7 @@ public class ChooseSkillsActivity extends AppCompatActivity {
                 if (radioButton!=null) {
                     Toast.makeText(getApplicationContext(), radioButton.getText(), Toast.LENGTH_SHORT).show();
                     DatabaseHelper dbHelper=new DatabaseHelper(getApplicationContext());
+                    dbHelper.createLevelSolvedTable(radioButton.getText());
                    // dbHelper.createTempSkillTable(radioButton.getText());
                     Intent intent = new Intent(ChooseSkillsActivity.this, QuizActivity.class);
                     intent.putExtra("skill",radioButton.getText());

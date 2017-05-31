@@ -1,13 +1,10 @@
 package com.example.shagil.ninjalike;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -16,7 +13,6 @@ import android.widget.Toast;
 import com.example.shagil.ninjalike.Helper.DatabaseHelper;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class QuizActivity extends AppCompatActivity {
@@ -28,12 +24,13 @@ public class QuizActivity extends AppCompatActivity {
     RadioGroup rg;
     RadioButton option1,option2,option3,option4;
     static int score=0;
+    String skill;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
-        String skill = getIntent().getStringExtra("skill");
+        skill = getIntent().getStringExtra("skill");
         incorrectAns=new ArrayList<>();
 
         qno = (TextView) findViewById(R.id.qno);
@@ -43,7 +40,7 @@ public class QuizActivity extends AppCompatActivity {
         DatabaseHelper db = new DatabaseHelper(getApplicationContext());
         quizQuestionList = db.getQuestionOfSkill(skill);
         for (int i=qNo;i<quizQuestionList.size();i++){
-            incorrectAns.add(i,i);
+            incorrectAns.add(i,quizQuestionList.get(i).getQid());
         }
         Log.v("Incorrect",String.valueOf(incorrectAns.toString()));
 
@@ -53,7 +50,7 @@ public class QuizActivity extends AppCompatActivity {
         option3 = (RadioButton) findViewById(R.id.option3);
         option4 = (RadioButton) findViewById(R.id.option4);
 
-            getNextQuestion(incorrectAns.get(0));
+            getNextQuestion(incorrectAns.iterator().next());
 
 
     }
@@ -79,16 +76,23 @@ public class QuizActivity extends AppCompatActivity {
                 if (radioButton != null) {
                     if (radioButton.getText().toString().equals(quizQuestionList.get(qNum).getLocalCorrectAnswer())) {
                         Toast.makeText(getApplicationContext(), "Correct Answer", Toast.LENGTH_SHORT).show();
-                        incorrectAns.remove(0);
+                        DatabaseHelper dbHelper=new DatabaseHelper(getBaseContext());
+                        dbHelper.insertIntoLevelSolvedTable("true",skill,quizQuestionList.get(qNum).getQid());
+                        //incorrectAns.remove(incorrectAns.indexOf(qNum));
                         Log.v("Incorrect",incorrectAns.toString());
                         score += 4;
-                        getNextQuestion(incorrectAns.get(0));
+                        Log.v("Qnum",String.valueOf(qNum));
+                        getNextQuestion(incorrectAns.iterator().next());
+
 
                     } else {
                         Toast.makeText(getApplicationContext(), "Incorrect Answer", Toast.LENGTH_SHORT).show();
                         score -= 1;
+                        DatabaseHelper dbHelper=new DatabaseHelper(getBaseContext());
+                        dbHelper.insertIntoLevelSolvedTable("false",skill, quizQuestionList.get(qNum).getQid());
+                        Log.v("Qnum",String.valueOf(qNum));
                         Log.v("Incorrect",incorrectAns.toString());
-                        getNextQuestion(incorrectAns.get(1));
+                        getNextQuestion(incorrectAns.indexOf(qNum)+1);
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), "Please select an Option", Toast.LENGTH_SHORT).show();
