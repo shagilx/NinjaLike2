@@ -22,7 +22,7 @@ public class QuizQuestions {
     static final String[] option3={"2 or 4","boolean type","void","tab","character","f is a function of type float","int","encapsulated","integer, enum, void"};
     static final String[] option4={"based on the number of bits in the system","integer type","float","form feed","all of the above","none of the mentioned","bool","reprehensible","arrays, pointer, classes"};
     static final int[] correctAnswer={4,1,3,1,2,3,2,1,2};
-    public static final String[] levels={"C","C++","Python","Java"};
+    public static final String[] levels={"C++","C","Python","Java"};
 
 
     private List<QuizQuestion> quizQuestions;

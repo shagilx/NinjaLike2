@@ -20,7 +20,7 @@ import java.io.ByteArrayOutputStream;
 
 public class ChooseSkillsActivity extends AppCompatActivity {
     Button nextButton;
-    public static final String[] levels={"C","C++","Python","Java"};
+    public static final String[] levels={"C++","C","Python","Java"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +32,8 @@ public class ChooseSkillsActivity extends AppCompatActivity {
         DatabaseHelper dbHelper=new DatabaseHelper(this);
         String[] levels=dbHelper.getLevels();
 
-//         insertLevels();
-//         insertQuestions();
+      // insertLevels();
+     //   insertQuestions();
 
         LinearLayout linearLayout=(LinearLayout)findViewById(R.id.chooseSkillsLayout);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -65,6 +65,8 @@ public class ChooseSkillsActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), radioButton.getText(), Toast.LENGTH_SHORT).show();
                     DatabaseHelper dbHelper=new DatabaseHelper(getApplicationContext());
                     dbHelper.createLevelSolvedTable(radioButton.getText());
+                    dbHelper.createScoreTable();
+//                    dbHelper.initaliseScoreTable(radioButton.getText());
                    // dbHelper.createTempSkillTable(radioButton.getText());
                     Intent intent = new Intent(ChooseSkillsActivity.this, QuizActivity.class);
                     intent.putExtra("skill",radioButton.getText());

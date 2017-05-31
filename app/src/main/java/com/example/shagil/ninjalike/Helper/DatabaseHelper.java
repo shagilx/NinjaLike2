@@ -2,6 +2,7 @@ package com.example.shagil.ninjalike.Helper;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -10,6 +11,7 @@ import android.util.Log;
 import com.example.shagil.ninjalike.LoginActivity;
 import com.example.shagil.ninjalike.QuizQuestion;
 import com.example.shagil.ninjalike.QuizQuestions;
+import com.example.shagil.ninjalike.ScoreCard;
 
 import java.sql.Struct;
 import java.util.ArrayList;
@@ -101,7 +103,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void createUser(String userName, String password) {
         SQLiteDatabase db=this.getWritableDatabase();
         String insertIntoUsers="INSERT INTO "+USERS_TABLE+" ("+USERNAME+", "+PASSWORD+") VALUES ('"+userName+"', '"+password+"')";
-       // String insertIntoUserCurLevel="INSERT INTO "+USERS_TABLE_CUR_LEVEL+" ("+USERNAME+", "+CURRENT_LEVEL+") VALUES ('"+userName+"','"
         db.execSQL(insertIntoUsers);
         db.close();
     }
@@ -200,17 +201,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Cursor c1=db.rawQuery(selectOptions,null);
                 quizQuestion.setQuestion(c.getString(1));
                 quizQuestion.setCorrectAnswer(c.getString(2));
-                Log.v("correct",c.getString(2));
+                //Log.v("correct",c.getString(2));
                 if (c1!=null && c1.moveToFirst()) {
-                    Log.v("options", String.valueOf(c1.getString(3)));
+                   // Log.v("options", String.valueOf(c1.getString(3)));
                     String option1 = c1.getString(0);
-                    Log.v("Answers", c1.getString(0));
+                   // Log.v("Answers", c1.getString(0));
                     String option2 = c1.getString(1);
-                    Log.v("Answers", c1.getString(1));
+                    //Log.v("Answers", c1.getString(1));
                     String option3 = c1.getString(2);
-                    Log.v("Answers", c1.getString(2));
+                   // Log.v("Answers", c1.getString(2));
                     String option4 = c1.getString(3);
-                    Log.v("Answers", c1.getString(3));
+                   // Log.v("Answers", c1.getString(3));
                     String[] answers = {option1, option2, option3, option4};
                     quizQuestion.setAnswers(answers);
                     quizQuestionList.add(quizQuestion);
@@ -222,8 +223,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void createLevelSolvedTable(CharSequence text) {
-        //String createTable="DROP TABLE `"+ LoginActivity.userName+"_"+text+"`";
-        String createTable="CREATE TABLE IF NOT EXISTS `"+ LoginActivity.userName+"_"+text+"` ("+USERNAME+" text, "+QID+" text, "+" solved text default 'false' )";
+
+       // String createTable="DROP TABLE `"+ LoginActivity.userName+"_"+text+"`";
+        String createTable="CREATE TABLE IF NOT EXISTS `"+ LoginActivity.userName+"_"+text+"` ("+USERNAME+" text, "+QID+" text , "+" solved text default 'false' )";
         SQLiteDatabase db=this.getWritableDatabase();
         db.execSQL(createTable);
         Log.v("SolvedTable","table created");
@@ -231,9 +233,108 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void insertIntoLevelSolvedTable(String solved, String skill, int qid) {
-        String insertIntoTable="INSERT INTO `"+LoginActivity.userName+"_"+skill+"` values ('"+LoginActivity.userName+"','"+qid+"', '"+solved+"')";
+        //String insertIntoTable="DELETE FROM `"+LoginActivity.userName+"_"+skill+"`";
+       String insertIntoTable="INSERT INTO `"+LoginActivity.userName+"_"+skill+"` values ('"+LoginActivity.userName+"','"+qid+"', '"+solved+"')";
         SQLiteDatabase db=this.getWritableDatabase();
         db.execSQL(insertIntoTable);
         Log.v("InsertIntoSolved","inserted");
+    }
+
+    public ArrayList<Integer> getQidLevelSolvedTable(String skill) {
+        ArrayList<Integer> falseQuestion=new ArrayList<>();
+        SQLiteDatabase db=this.getReadableDatabase();
+        String getQID="SELECT "+QID+" FROM `"+LoginActivity.userName+"_"+skill+"` WHERE solved = 'false'";
+        Cursor c=db.rawQuery(getQID,null);
+        if (c.moveToFirst()){
+            do {
+                falseQuestion.add(c.getInt(0));
+            }while (c.moveToNext());
+        }
+        return falseQuestion;
+    }
+
+    public List<QuizQuestion> getQuestionOfSkill(String skill, ArrayList<Integer> incorrectAns) {
+        SQLiteDatabase db=this.getReadableDatabase();
+        List<QuizQuestion> questionList=new ArrayList<>();
+
+        Iterator<Integer> iterator=incorrectAns.iterator();
+        while (iterator.hasNext()) {
+            String getQuestion = "SELECT Q." + QID + ", Q." + QUESTION + ", Q." + CORRECTANS + " FROM " + QUESTIONS_TABLE + " Q WHERE Q." + SKILLS + " = '" + skill + "' AND " + QID + " = '" + iterator.next() + "'";
+            Cursor c = db.rawQuery(getQuestion, null);
+            if (c.moveToFirst()) {
+                do {
+                    QuizQuestion quizQuestion=new QuizQuestion();
+                    String selectOptions = "SELECT O." + OPTION1 + ", O." + OPTION2 + ", O." + OPTION3 + ", O." + OPTION4 + " FROM " + OPTIONS_TABLE + " O WHERE O." + QID + " = " + c.getInt(0);
+                    Cursor c1 = db.rawQuery(selectOptions, null);
+                    quizQuestion.setQid(c.getInt(0));
+                    quizQuestion.setQuestion(c.getString(1));
+                    Log.v("question", c.getString(1));
+                    quizQuestion.setCorrectAnswer(c.getString(2));
+                    Log.v("correct", c.getString(2));
+                    if (c1 != null && c1.moveToFirst()) {
+
+                        String option1 = c1.getString(0);
+                        Log.v("Answers", c1.getString(0));
+                        String option2 = c1.getString(1);
+                        Log.v("Answers", c1.getString(1));
+                        String option3 = c1.getString(2);
+                        Log.v("Answers", c1.getString(2));
+                        String option4 = c1.getString(3);
+                        Log.v("Answers", c1.getString(3));
+                        String[] answers = {option1, option2, option3, option4};
+                        quizQuestion.setAnswers(answers);
+
+                    }
+                    questionList.add(quizQuestion);
+                } while (c.moveToNext());
+            }
+
+        }
+        return questionList;
+    }
+
+    public void updateStatus(int qid, String skill) {
+        String updateoTable="UPDATE `"+LoginActivity.userName+"_"+skill+"` SET solved = 'true' where "+QID+" = '"+qid+"'";
+        SQLiteDatabase db=this.getWritableDatabase();
+        db.execSQL(updateoTable);
+        Log.v("InsertIntoSolved","inserted");
+    }
+
+    public void createScoreTable() {
+       // String createTable="DROP TABLE `"+LoginActivity.userName+"_score`";
+        String createTable="CREATE TABLE IF NOT EXISTS `"+ LoginActivity.userName+"_score` ( skill text primary key, score integer, solved integer, unsolved integer )";
+        SQLiteDatabase db=this.getWritableDatabase();
+        db.execSQL(createTable);
+        Log.v("scoreTable","table created");
+
+    }
+
+    public void initaliseScoreTable(CharSequence text){
+       // String createTable="DELETE FROM `"+ LoginActivity.userName+"_score`";
+        String createTable="INSERT INTO `"+ LoginActivity.userName+"_score` VALUES ( '"+text+"' , 0, 0, 0 )";
+        SQLiteDatabase db=this.getWritableDatabase();
+        db.execSQL(createTable);
+        Log.v("ScoreTable","table initialised");
+    }
+
+    public void updateScoreTable(String skill, String solved, String unsolved, String score) {
+        String updateTable="UPDATE `"+LoginActivity.userName+"_score` SET score = "+score+", solved = "+solved+", unsolved = "+unsolved+" where skill = '"+skill+"'";
+        SQLiteDatabase db=this.getWritableDatabase();
+        db.execSQL(updateTable);
+        Log.v("ScoreTable","Table Updated");
+    }
+
+    public ScoreCard getScores(String skill) {
+        String getScores="SELECT * FROM `"+LoginActivity.userName+"_score` where skill = '"+skill+"'";
+        SQLiteDatabase db=this.getReadableDatabase();
+        Cursor c=db.rawQuery(getScores,null);
+        ScoreCard scoreCard=new ScoreCard();
+        if (c.moveToFirst()){
+            scoreCard.setSkill(c.getString(0));
+            scoreCard.setScore(c.getInt(1));
+            scoreCard.setSolved(c.getInt(2));
+            scoreCard.setUnsolved(c.getInt(3));
+        }
+        return scoreCard;
     }
 }

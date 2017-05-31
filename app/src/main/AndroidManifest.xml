@@ -18,7 +18,8 @@
         </activity>
         <activity android:name=".SignUpActivity" />
         <activity android:name=".ChooseSkillsActivity" />
-        <activity android:name=".QuizActivity"></activity>
+        <activity android:name=".QuizActivity" />
+        <activity android:name=".ScoreTable"></activity>
     </application>
 
 </manifest>
