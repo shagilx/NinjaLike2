@@ -1,6 +1,7 @@
 package com.example.shagil.ninjalike;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
@@ -20,7 +21,8 @@ import java.io.ByteArrayOutputStream;
 
 public class ChooseSkillsActivity extends AppCompatActivity {
     Button nextButton;
-    public static final String[] levels={"C++","C","Python","Java"};
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +34,8 @@ public class ChooseSkillsActivity extends AppCompatActivity {
         DatabaseHelper dbHelper=new DatabaseHelper(this);
         String[] levels=dbHelper.getLevels();
 
-      // insertLevels();
-     //   insertQuestions();
+        pref=getPreferences(MODE_PRIVATE);
+
 
         LinearLayout linearLayout=(LinearLayout)findViewById(R.id.chooseSkillsLayout);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -66,8 +68,14 @@ public class ChooseSkillsActivity extends AppCompatActivity {
                     DatabaseHelper dbHelper=new DatabaseHelper(getApplicationContext());
                     dbHelper.createLevelSolvedTable(radioButton.getText());
                     dbHelper.createScoreTable();
-//                    dbHelper.initaliseScoreTable(radioButton.getText());
-                   // dbHelper.createTempSkillTable(radioButton.getText());
+                    if (!pref.contains("register")){
+                        editor=pref.edit();
+                        editor.putString("register","true");
+                        editor.apply();
+
+                        dbHelper.initaliseScoreTable(radioButton.getText());
+                    }
+
                     Intent intent = new Intent(ChooseSkillsActivity.this, QuizActivity.class);
                     intent.putExtra("skill",radioButton.getText());
                     startActivity(intent);
@@ -82,22 +90,5 @@ public class ChooseSkillsActivity extends AppCompatActivity {
 
     }
 
-    private void insertQuestions() {
-        DatabaseHelper db=new DatabaseHelper(getApplicationContext());
-        db.insertQuestions();
-    }
 
-    private void insertLevels() {
-        for (int i=0;i<levels.length;i++) {
-            DatabaseHelper db=new DatabaseHelper(getApplicationContext());
-            String url="drawable/"+"level_"+(i+1);
-
-            int imageKey=getResources().getIdentifier(url,"drawable",getPackageName());
-            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), imageKey);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            byte[] bitMapData = stream.toByteArray();
-            db.insertLevels(levels[i],bitMapData);
-        }
-    }
 }

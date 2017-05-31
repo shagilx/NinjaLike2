@@ -1,6 +1,7 @@
 package com.example.shagil.ninjalike;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
@@ -19,7 +20,9 @@ public class LoginActivity extends AppCompatActivity {
     EditText userNameText,passwordText;
     Button loginButton,signUpButton;
     public static String userName;
-
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
+    public static final String[] levels={"C++","C","Python","Java"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +32,15 @@ public class LoginActivity extends AppCompatActivity {
         loginButton=(Button)findViewById(R.id.Loginbutton);
         signUpButton=(Button)findViewById(R.id.gotosignupbutton);
 
+        pref=getPreferences(MODE_PRIVATE);
+
+        if (!pref.contains("register")){
+            editor=pref.edit();
+            editor.putString("register","true");
+            editor.apply();
+            insertLevels();
+            insertQuestions();
+        }
 
 
         signUpButton.setOnClickListener(new View.OnClickListener() {
@@ -49,6 +61,10 @@ public class LoginActivity extends AppCompatActivity {
                 if (valid){
                     Intent intent=new Intent(LoginActivity.this,ChooseSkillsActivity.class);
                     userName=username;
+                    pref=getSharedPreferences("usernameFile",MODE_PRIVATE);
+                    editor=pref.edit();
+                    editor.putString("username",username);
+                    editor.apply();
                     //intent.putExtra("username",username);
                     startActivity(intent);
                     finish();
@@ -58,5 +74,22 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+    private void insertQuestions() {
+        DatabaseHelper db=new DatabaseHelper(getApplicationContext());
+        db.insertQuestions();
+    }
 
+    private void insertLevels() {
+        for (int i=0;i<levels.length;i++) {
+            DatabaseHelper db=new DatabaseHelper(getApplicationContext());
+            String url="drawable/"+"level_"+(i+1);
+
+            int imageKey=getResources().getIdentifier(url,"drawable",getPackageName());
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), imageKey);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] bitMapData = stream.toByteArray();
+            db.insertLevels(levels[i],bitMapData);
+        }
+    }
 }

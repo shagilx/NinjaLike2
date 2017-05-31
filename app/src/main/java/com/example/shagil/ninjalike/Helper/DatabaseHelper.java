@@ -199,6 +199,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 String selectOptions="SELECT O."+OPTION1+", O."+OPTION2+", O."+OPTION3+", O."+OPTION4+" FROM "+OPTIONS_TABLE+ " O WHERE O."+QID+" = "+c.getInt(0);
                 Cursor c1=db.rawQuery(selectOptions,null);
+                quizQuestion.setQid(c.getInt(0));
                 quizQuestion.setQuestion(c.getString(1));
                 quizQuestion.setCorrectAnswer(c.getString(2));
                 //Log.v("correct",c.getString(2));
@@ -225,7 +226,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void createLevelSolvedTable(CharSequence text) {
 
        // String createTable="DROP TABLE `"+ LoginActivity.userName+"_"+text+"`";
-        String createTable="CREATE TABLE IF NOT EXISTS `"+ LoginActivity.userName+"_"+text+"` ("+USERNAME+" text, "+QID+" text , "+" solved text default 'false' )";
+        String createTable="CREATE TABLE IF NOT EXISTS `"+ LoginActivity.userName+"_"+text+"` ("+USERNAME+" text, "+QID+" text primary key , "+" solved text default 'false' )";
         SQLiteDatabase db=this.getWritableDatabase();
         db.execSQL(createTable);
         Log.v("SolvedTable","table created");
@@ -318,7 +319,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void updateScoreTable(String skill, String solved, String unsolved, String score) {
-        String updateTable="UPDATE `"+LoginActivity.userName+"_score` SET score = "+score+", solved = "+solved+", unsolved = "+unsolved+" where skill = '"+skill+"'";
+        String updateTable="UPDATE `"+LoginActivity.userName+"_score` SET score = score "+score+", solved = solved "+solved+", unsolved = unsolved "+unsolved+" where skill = '"+skill+"'";
         SQLiteDatabase db=this.getWritableDatabase();
         db.execSQL(updateTable);
         Log.v("ScoreTable","Table Updated");

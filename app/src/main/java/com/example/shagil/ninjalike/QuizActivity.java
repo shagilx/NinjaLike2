@@ -57,37 +57,16 @@ public class QuizActivity extends AppCompatActivity {
             incorrectAns.add(i,quizQuestionList.get(i).getQid());
         }*/
 
-        pref=getSharedPreferences(MY_PREF_NAME,MODE_PRIVATE);
+        pref=getPreferences(MODE_PRIVATE);
         editor = pref.edit();
-        if(pref.contains("register"))
-        {
-            String getStatus=pref.getString("register", "nil");
-            if(getStatus.equals("true")){
-
-            }else{
-                //first time
-                for (int i=0;i<quizQuestionList.size();i++) {
-     //               dbHelper.insertIntoLevelSolvedTable("false", skill, quizQuestionList.get(i).getQid());
-                }
-                editor.putString("register","true");
-                editor.apply();
-
-            }
-        }
-        else{ //first time
-
+        if (!pref.contains("register")){
             for (int i=0;i<quizQuestionList.size();i++) {
-//                dbHelper.insertIntoLevelSolvedTable("false", skill, quizQuestionList.get(i).getQid());
+                dbHelper.insertIntoLevelSolvedTable("false", skill, quizQuestionList.get(i).getQid());
             }
-            editor = pref.edit();
+
             editor.putString("register","true");
-            editor.commit();
+            editor.apply();
         }
-
-
-        /*for (int i=0;i<quizQuestionList.size();i++) {
-            dbHelper.insertIntoLevelSolvedTable("false", skill, quizQuestionList.get(i).getQid());
-        }*/
 
         incorrectAns=dbHelper.getQidLevelSolvedTable(skill);
         Log.v("false",incorrectAns.toString());
@@ -97,10 +76,10 @@ public class QuizActivity extends AppCompatActivity {
         iterator=quizQuestionList2.iterator();
 
             getNextQuestion(iterator.next());
-        
+
     }
 
-    private void getNextQuestion(final QuizQuestion next) {
+        private void getNextQuestion(final QuizQuestion next) {
         rg.clearCheck();
         qno.setText(String.valueOf(next.getQid() + 1));
         question.setText(next.getQuestion());
@@ -121,7 +100,7 @@ public class QuizActivity extends AppCompatActivity {
                     if (radioButton.getText().toString().equals(next.getLocalCorrectAnswer())){
                         Toast.makeText(getApplicationContext(),"Correct Answer",Toast.LENGTH_SHORT).show();
                         dbHelper.updateStatus(next.getQid(),skill);
-                        dbHelper.updateScoreTable(skill,"+1","0","+4");
+                        dbHelper.updateScoreTable(skill,"+1","+0","+4");
                         try {
                             getNextQuestion(iterator.next());
                         }catch (NoSuchElementException e){
@@ -132,7 +111,7 @@ public class QuizActivity extends AppCompatActivity {
 
                     }else {
                         Toast.makeText(getApplicationContext(),"InCorrect Answer",Toast.LENGTH_SHORT).show();
-                        dbHelper.updateScoreTable(skill,"0","+1","-1");
+                        dbHelper.updateScoreTable(skill,"+0","+1","-1");
                         try {
                             getNextQuestion(iterator.next());
                         }catch (NoSuchElementException e){
