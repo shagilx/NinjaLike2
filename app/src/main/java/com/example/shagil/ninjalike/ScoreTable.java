@@ -18,7 +18,7 @@ public class ScoreTable extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_score_table);
-        skill=getIntent().getStringExtra("skill");
+        skill=ChooseSkillsActivity.skill;
         skillTV=(TextView)findViewById(R.id.skillTV);
         score=(TextView)findViewById(R.id.scoreTV);
         solved=(TextView)findViewById(R.id.solvedTV);

@@ -2,6 +2,7 @@ package com.example.shagil.ninjalike;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -38,7 +39,7 @@ public class QuizActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
-        skill=getIntent().getStringExtra("skill");
+        skill=ChooseSkillsActivity.skill;
 
         qno = (TextView) findViewById(R.id.qno);
         question = (TextView) findViewById(R.id.textView6);
@@ -61,7 +62,7 @@ public class QuizActivity extends AppCompatActivity {
         editor = pref.edit();
         if (!pref.contains("register")){
             for (int i=0;i<quizQuestionList.size();i++) {
-                dbHelper.insertIntoLevelSolvedTable("false", skill, quizQuestionList.get(i).getQid());
+                dbHelper.initializeLevelSolvedTable("false", skill, quizQuestionList.get(i).getQid());
             }
 
             editor.putString("register","true");
@@ -100,24 +101,24 @@ public class QuizActivity extends AppCompatActivity {
                     if (radioButton.getText().toString().equals(next.getLocalCorrectAnswer())){
                         Toast.makeText(getApplicationContext(),"Correct Answer",Toast.LENGTH_SHORT).show();
                         dbHelper.updateStatus(next.getQid(),skill);
-                        dbHelper.updateScoreTable(skill,"+1","+0","+4");
+                        //dbHelper.updateScoreTable(skill,"+1","+0","+4");
                         try {
                             getNextQuestion(iterator.next());
                         }catch (NoSuchElementException e){
                             Intent intent=new Intent(QuizActivity.this,ScoreTable.class);
-                            intent.putExtra("skill",skill);
                             startActivity(intent);
+                            finish();
                         }
 
                     }else {
                         Toast.makeText(getApplicationContext(),"InCorrect Answer",Toast.LENGTH_SHORT).show();
-                        dbHelper.updateScoreTable(skill,"+0","+1","-1");
+                        //dbHelper.updateScoreTable(skill,"+0","+1","-1");
                         try {
                             getNextQuestion(iterator.next());
                         }catch (NoSuchElementException e){
                             Intent intent=new Intent(QuizActivity.this,ScoreTable.class);
-                            intent.putExtra("skill",skill);
                             startActivity(intent);
+                            finish();
                         }
                     }
                 }else {

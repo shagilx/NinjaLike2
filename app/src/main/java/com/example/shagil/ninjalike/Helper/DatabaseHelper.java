@@ -223,17 +223,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return quizQuestionList;
     }
 
-    public void createLevelSolvedTable(CharSequence text) {
+    public void createLevelSolvedTable(String skill) {
 
        // String createTable="DROP TABLE `"+ LoginActivity.userName+"_"+text+"`";
-        String createTable="CREATE TABLE IF NOT EXISTS `"+ LoginActivity.userName+"_"+text+"` ("+USERNAME+" text, "+QID+" text primary key , "+" solved text default 'false' )";
+        String createTable="CREATE TABLE IF NOT EXISTS `"+ LoginActivity.userName+"_"+skill+"` ("+USERNAME+" text, "+QID+" text primary key , "+" solved text default 'false' )";
         SQLiteDatabase db=this.getWritableDatabase();
         db.execSQL(createTable);
         Log.v("SolvedTable","table created");
 
     }
 
-    public void insertIntoLevelSolvedTable(String solved, String skill, int qid) {
+    public void initializeLevelSolvedTable(String solved, String skill, int qid) {
         //String insertIntoTable="DELETE FROM `"+LoginActivity.userName+"_"+skill+"`";
        String insertIntoTable="INSERT INTO `"+LoginActivity.userName+"_"+skill+"` values ('"+LoginActivity.userName+"','"+qid+"', '"+solved+"')";
         SQLiteDatabase db=this.getWritableDatabase();
@@ -310,9 +310,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public void initaliseScoreTable(CharSequence text){
+    public void initaliseScoreTable(String skill){
        // String createTable="DELETE FROM `"+ LoginActivity.userName+"_score`";
-        String createTable="INSERT INTO `"+ LoginActivity.userName+"_score` VALUES ( '"+text+"' , 0, 0, 0 )";
+        String createTable="INSERT INTO `"+ LoginActivity.userName+"_score` VALUES ( '"+skill+"' , 0, 0, 0 )";
         SQLiteDatabase db=this.getWritableDatabase();
         db.execSQL(createTable);
         Log.v("ScoreTable","table initialised");
@@ -326,8 +326,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public ScoreCard getScores(String skill) {
-        String getScores="SELECT * FROM `"+LoginActivity.userName+"_score` where skill = '"+skill+"'";
         SQLiteDatabase db=this.getReadableDatabase();
+        String getCount="SELECT COUNT(solved) from `"+LoginActivity.userName+"_"+skill+"` where solved= 'true'";
+
+        Cursor c1=db.rawQuery(getCount,null);
+        c1.moveToFirst();
+        int solved=c1.getInt(0);
+        c1.close();
+        String allCount= "SELECT COUNT ("+QID+") FROM `"+LoginActivity.userName+"_"+skill+"` ";
+        Cursor c2=db.rawQuery(allCount,null);
+        c2.moveToFirst();
+        int countAll=c2.getInt(0);
+        int unsolved=countAll-solved;
+        int score=(solved*4)-(unsolved*1);
+        c2.close();
+        String insertIntoTable="UPDATE `"+LoginActivity.userName+"_score` SET solved = "+solved+", unsolved = "+unsolved+", score = "+score+" where skill = '"+skill+"'";
+        db.execSQL(insertIntoTable);
+        String getScores="SELECT * FROM `"+LoginActivity.userName+"_score` where skill = '"+skill+"'";
+
         Cursor c=db.rawQuery(getScores,null);
         ScoreCard scoreCard=new ScoreCard();
         if (c.moveToFirst()){
@@ -336,6 +352,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             scoreCard.setSolved(c.getInt(2));
             scoreCard.setUnsolved(c.getInt(3));
         }
+        c.close();
         return scoreCard;
+
+    }
+
+    public boolean checkUnsolved(String skill) {
+        SQLiteDatabase db=this.getReadableDatabase();
+        String checkFalse="Select count(solved) from `"+LoginActivity.userName+"_"+skill+"` where solved='false'";
+        Cursor c=db.rawQuery(checkFalse,null);
+        c.moveToFirst();
+        int falseCount=c.getInt(0);
+        if (falseCount>0)
+            return true;
+            else return false;
+
+    }
+
+    public void resetMyScore(String skill) {
+        SQLiteDatabase db=this.getWritableDatabase();
+        String resetScore="UPDATE `"+LoginActivity.userName+"_score` SET solved = 0, unsolved = 0, score = 0 where skill = '"+skill+"'";
+        db.execSQL(resetScore);
+        String resetSolvedTable="UPDATE `"+LoginActivity.userName+"_"+skill+"` SET solved= 'false'";
+        db.execSQL(resetSolvedTable);
     }
 }

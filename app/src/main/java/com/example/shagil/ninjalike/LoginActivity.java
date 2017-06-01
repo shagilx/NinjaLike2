@@ -23,6 +23,7 @@ public class LoginActivity extends AppCompatActivity {
     SharedPreferences pref;
     SharedPreferences.Editor editor;
     public static final String[] levels={"C++","C","Python","Java"};
+    public static final String MY_PREF_NAME="userProfile";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (valid){
                     Intent intent=new Intent(LoginActivity.this,ChooseSkillsActivity.class);
                     userName=username;
-                    pref=getSharedPreferences("usernameFile",MODE_PRIVATE);
+                    pref=getSharedPreferences(MY_PREF_NAME,MODE_PRIVATE);
                     editor=pref.edit();
                     editor.putString("username",username);
                     editor.apply();
