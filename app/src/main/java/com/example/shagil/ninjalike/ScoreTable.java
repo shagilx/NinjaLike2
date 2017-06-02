@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.shagil.ninjalike.Helper.DatabaseHelper;
+import com.example.shagil.ninjalike.data.ScoreCard;
 
 public class ScoreTable extends AppCompatActivity {
     String skill;

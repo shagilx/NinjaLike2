@@ -2,23 +2,19 @@ package com.example.shagil.ninjalike.Helper;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.example.shagil.ninjalike.LoginActivity;
-import com.example.shagil.ninjalike.QuizQuestion;
+import com.example.shagil.ninjalike.data.QuizQuestion;
 import com.example.shagil.ninjalike.QuizQuestions;
-import com.example.shagil.ninjalike.ScoreCard;
+import com.example.shagil.ninjalike.data.ScoreCard;
 
-import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Queue;
-import java.util.StringTokenizer;
 
 /**
  * Created by shagil on 25/5/17.

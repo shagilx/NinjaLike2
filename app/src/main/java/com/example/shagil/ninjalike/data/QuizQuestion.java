@@ -1,4 +1,4 @@
-package com.example.shagil.ninjalike;
+package com.example.shagil.ninjalike.data;
 
 /**
  * Created by Siddiqui on 5/24/2017.

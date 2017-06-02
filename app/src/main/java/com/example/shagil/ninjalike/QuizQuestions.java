@@ -1,5 +1,7 @@
 package com.example.shagil.ninjalike;
 
+import com.example.shagil.ninjalike.data.QuizQuestion;
+
 import java.util.ArrayList;
 import java.util.List;
 
