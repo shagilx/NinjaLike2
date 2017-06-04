@@ -12,11 +12,27 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.Cache;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.shagil.ninjalike.Helper.DatabaseHelper;
+import com.example.shagil.ninjalike.app.AppController;
+import com.example.shagil.ninjalike.data.FeedItem;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
+    private static final String TAG=LoginActivity.class.getSimpleName();
     EditText userNameText,passwordText;
     Button loginButton,signUpButton;
     public static String userName;
@@ -24,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     SharedPreferences.Editor editor;
     public static final String[] levels={"C++","C","Python","Java"};
     public static final String MY_PREF_NAME="userProfile";
+    private String URL_FEED="http://api.androidhive.info/feed/feed.json";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,13 +51,45 @@ public class LoginActivity extends AppCompatActivity {
         signUpButton=(Button)findViewById(R.id.gotosignupbutton);
 
         pref=getPreferences(MODE_PRIVATE);
+        //insertQuestions();
 
         if (!pref.contains("register")){
             editor=pref.edit();
             editor.putString("register","true");
             editor.apply();
             insertLevels();
-            insertQuestions();
+            //insertQuestions();
+        }
+
+        Cache cache= AppController.getInstance().getRequestQueue().getCache();
+        Cache.Entry entry=cache.get(URL_FEED);
+        if (entry!=null){
+            try {
+                String data=new String(entry.data,"UTF-8");
+                try {
+                    parseJsonFeed(new JSONObject(data));
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+            }catch (UnsupportedEncodingException e){
+                e.printStackTrace();
+            }
+        }else {
+            JsonObjectRequest jsonReq=new JsonObjectRequest(Request.Method.GET, URL_FEED, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    VolleyLog.d(TAG, "Response: " + response.toString());
+                    if (response != null) {
+                        parseJsonFeed(response);
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    VolleyLog.d(TAG,"Error: "+error.getMessage());
+                }
+            });
+            AppController.getInstance().addToRequestQueue(jsonReq);
         }
 
 
@@ -77,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
     }
     private void insertQuestions() {
         DatabaseHelper db=new DatabaseHelper(getApplicationContext());
-        db.insertQuestions();
+      //  db.insertQuestions(feedItems);
     }
 
     private void insertLevels() {
@@ -92,5 +141,27 @@ public class LoginActivity extends AppCompatActivity {
             byte[] bitMapData = stream.toByteArray();
             db.insertLevels(levels[i],bitMapData);
         }
+    }
+    private void parseJsonFeed(JSONObject response) {
+        List<FeedItem> feedItems=new ArrayList<>();
+        try{
+            JSONArray feedArray=response.getJSONArray("feed");
+            for (int i=0;i<feedArray.length();i++){
+                JSONObject feedObj=(JSONObject)feedArray.get(i);
+                FeedItem item=new FeedItem();
+                item.setId(feedObj.getInt("id"));
+                item.setName(feedObj.getString("name"));
+                item.setStatus(feedObj.getString("status"));
+
+                feedItems.add(item);
+                Log.v("FeedItems",feedItems.toString());
+            }
+            DatabaseHelper dbHelper=new DatabaseHelper(this);
+            dbHelper.insertQuestions(feedItems);
+
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        //getNextQuestion(feedItems.iterator().next());
     }
 }

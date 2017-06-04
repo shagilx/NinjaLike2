@@ -46,7 +46,7 @@ public class QuizQuestions {
                         option2[i],
                         option3[i],
                         option4[i]};
-                QuizQuestion quizQuestion=new QuizQuestion(questions[i],correctAnswer[i],"C++",answers);
+                QuizQuestion quizQuestion=new QuizQuestion(questions[i],correctAnswer[i],"C",answers);
                 quizQuestions.add(quizQuestion);
             }
       return quizQuestions;
