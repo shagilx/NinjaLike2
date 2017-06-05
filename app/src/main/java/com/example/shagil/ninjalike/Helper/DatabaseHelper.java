@@ -298,9 +298,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void updateStatus(int qid, String skill) {
-        String updateoTable="UPDATE `"+LoginActivity.userName+"_"+skill+"` SET solved = 'true' where "+QID+" = '"+qid+"'";
+        String updateTable="UPDATE `"+LoginActivity.userName+"_"+skill+"` SET solved = 'true' where "+QID+" = '"+qid+"'";
         SQLiteDatabase db=this.getWritableDatabase();
-        db.execSQL(updateoTable);
+        db.execSQL(updateTable);
         Log.v("InsertIntoSolved","inserted");
     }
 
@@ -325,6 +325,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String updateTable="UPDATE `"+LoginActivity.userName+"_score` SET score = score "+score+", solved = solved "+solved+", unsolved = unsolved "+unsolved+" where skill = '"+skill+"'";
         SQLiteDatabase db=this.getWritableDatabase();
         db.execSQL(updateTable);
+        Log.v("ScoreTable","Table Updated");
         Log.v("ScoreTable","Table Updated");
     }
 
@@ -368,7 +369,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int falseCount=c.getInt(0);
         if (falseCount>0)
             return true;
-            else return false;
+            else
+                return false;
 
     }
 

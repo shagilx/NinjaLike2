@@ -58,39 +58,10 @@ public class LoginActivity extends AppCompatActivity {
             editor.putString("register","true");
             editor.apply();
             insertLevels();
-            //insertQuestions();
+            insertQuestions();
         }
 
-        Cache cache= AppController.getInstance().getRequestQueue().getCache();
-        Cache.Entry entry=cache.get(URL_FEED);
-        if (entry!=null){
-            try {
-                String data=new String(entry.data,"UTF-8");
-                try {
-                    parseJsonFeed(new JSONObject(data));
-                }catch (JSONException e){
-                    e.printStackTrace();
-                }
-            }catch (UnsupportedEncodingException e){
-                e.printStackTrace();
-            }
-        }else {
-            JsonObjectRequest jsonReq=new JsonObjectRequest(Request.Method.GET, URL_FEED, null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    VolleyLog.d(TAG, "Response: " + response.toString());
-                    if (response != null) {
-                        parseJsonFeed(response);
-                    }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    VolleyLog.d(TAG,"Error: "+error.getMessage());
-                }
-            });
-            AppController.getInstance().addToRequestQueue(jsonReq);
-        }
+
 
 
         signUpButton.setOnClickListener(new View.OnClickListener() {
@@ -125,7 +96,36 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
     private void insertQuestions() {
-        DatabaseHelper db=new DatabaseHelper(getApplicationContext());
+        Cache cache= AppController.getInstance().getRequestQueue().getCache();
+        Cache.Entry entry=cache.get(URL_FEED);
+        if (entry!=null){
+            try {
+                String data=new String(entry.data,"UTF-8");
+                try {
+                    parseJsonFeed(new JSONObject(data));
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+            }catch (UnsupportedEncodingException e){
+                e.printStackTrace();
+            }
+        }else {
+            JsonObjectRequest jsonReq=new JsonObjectRequest(Request.Method.GET, URL_FEED, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    VolleyLog.d(TAG, "Response: " + response.toString());
+                    if (response != null) {
+                        parseJsonFeed(response);
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    VolleyLog.d(TAG,"Error: "+error.getMessage());
+                }
+            });
+            AppController.getInstance().addToRequestQueue(jsonReq);
+        }
       //  db.insertQuestions(feedItems);
     }
 

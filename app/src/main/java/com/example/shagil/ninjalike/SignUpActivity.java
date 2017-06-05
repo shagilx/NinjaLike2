@@ -1,11 +1,13 @@
 package com.example.shagil.ninjalike;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteConstraintException;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.shagil.ninjalike.Helper.DatabaseHelper;
 
@@ -29,9 +31,13 @@ public class SignUpActivity extends AppCompatActivity {
                 String userName=userNameEditText.getText().toString().toLowerCase().trim();
                 String password=passwordEditText.getText().toString();
                 DatabaseHelper dbHelper=new DatabaseHelper(getApplicationContext());
-                dbHelper.createUser(userName,password);
-                Intent intent=new Intent(SignUpActivity.this,LoginActivity.class);
-                startActivity(intent);
+                try {
+                    dbHelper.createUser(userName, password);
+                    Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                }catch(SQLiteConstraintException e){
+                    Toast.makeText(getApplicationContext(),"Use another uername",Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

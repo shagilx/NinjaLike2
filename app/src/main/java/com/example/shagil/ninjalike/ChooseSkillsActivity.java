@@ -66,25 +66,30 @@ public class ChooseSkillsActivity extends AppCompatActivity {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RadioButton radioButton=new RadioButton(ChooseSkillsActivity.this);
+                RadioButton radioButton;
                 int selectedId=rg.getCheckedRadioButtonId();
 
                 radioButton=(RadioButton)findViewById(selectedId);
                 if (radioButton!=null) {
-                   // Toast.makeText(getApplicationContext(), radioButton.getText(), Toast.LENGTH_SHORT).show();
                     skill=radioButton.getText().toString();
                     DatabaseHelper dbHelper=new DatabaseHelper(getApplicationContext());
                     dbHelper.createLevelSolvedTable(skill);
                     dbHelper.createScoreTable();
-                    boolean haveQuestions=dbHelper.checkUnsolved(skill);
-
                     if (!pref.contains("register")){
                         editor=pref.edit();
                         editor.putString("register","true");
                         editor.apply();
 
                         dbHelper.initaliseScoreTable(skill);
+                       // dbHelper.resetMyScore(skill);
                     }
+                   // Toast.makeText(getApplicationContext(), radioButton.getText(), Toast.LENGTH_SHORT).show();
+
+
+
+                    boolean haveQuestions=dbHelper.checkUnsolved(skill);
+
+
                     if (haveQuestions) {
 
 
