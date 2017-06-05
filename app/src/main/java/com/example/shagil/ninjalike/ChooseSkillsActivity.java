@@ -27,7 +27,7 @@ import java.util.List;
 
 public class ChooseSkillsActivity extends AppCompatActivity {
     Button nextButton;
-    SharedPreferences pref,pref2;
+    SharedPreferences pref;
     SharedPreferences.Editor editor;
     FragmentManager fm=getSupportFragmentManager();
     public static String skill;
@@ -48,8 +48,7 @@ public class ChooseSkillsActivity extends AppCompatActivity {
         Log.v("achievedLevel",String.valueOf(achievedLevelCount));
 
         pref=getPreferences(MODE_PRIVATE);
-        pref2=getSharedPreferences(MY_PREFS_NAME,MODE_PRIVATE);
-        editor=pref2.edit();
+
 
         LinearLayout linearLayout=(LinearLayout)findViewById(R.id.chooseSkillsLayout);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -67,7 +66,7 @@ public class ChooseSkillsActivity extends AppCompatActivity {
             radioButton1.setId(i);
             radioButton1.setTag(url);
             radioButton1.setEnabled(false);
-            if (i<=achievedLevelCount)
+            if (i<=achievedLevelCount-1)
                 radioButton1.setEnabled(true);
             rg.addView(radioButton1,leftMargin);
             Log.v("RBid",String.valueOf(radioButton1.getTag()));
@@ -75,29 +74,32 @@ public class ChooseSkillsActivity extends AppCompatActivity {
         ((ViewGroup)findViewById(R.id.radiogroup)).addView(rg);
 
 
-
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 RadioButton radioButton;
-                int selectedId=rg.getCheckedRadioButtonId();
+                int selectedId =rg.getCheckedRadioButtonId();
 
-                radioButton=(RadioButton)findViewById(selectedId);
-                if (radioButton!=null) {
+                radioButton = (RadioButton) findViewById(selectedId);
+                if (radioButton != null) {
                     skill=radioButton.getText().toString();
                     DatabaseHelper dbHelper=new DatabaseHelper(getApplicationContext());
                     dbHelper.createLevelSolvedTable(skill);
                     quizQuestionList=dbHelper.getQuestionOfSkill(skill);
-                    for (int i=0;i<quizQuestionList.size();i++) {
-                        dbHelper.initializeLevelSolvedTable("false", skill, quizQuestionList.get(i).getQid());
-                    }
-
+                    Log.v("questionList2",String.valueOf(quizQuestionList.size()));
                     if (!pref.contains("register")){
                         editor=pref.edit();
                         editor.putString("register","true");
                         editor.apply();
+
                         dbHelper.initaliseScoreTable(skill);
+                        for (int i=0;i<quizQuestionList.size();i++) {
+                            dbHelper.initializeLevelSolvedTable("false", skill, quizQuestionList.get(i).getQid());
+                        }
                     }
+
+
+
                     boolean haveQuestions=dbHelper.checkUnsolved(skill);
                     if (haveQuestions) {
                         Intent intent = new Intent(ChooseSkillsActivity.this, QuizActivity.class);

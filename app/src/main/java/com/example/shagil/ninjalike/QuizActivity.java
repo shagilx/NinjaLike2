@@ -63,9 +63,7 @@ public class QuizActivity extends AppCompatActivity {
         pref=getPreferences(MODE_PRIVATE);
         editor = pref.edit();
         if (!pref.contains("register")){
-            for (int i=0;i<quizQuestionList.size();i++) {
-                dbHelper.initializeLevelSolvedTable("false", skill, quizQuestionList.get(i).getQid());
-            }
+           
 
             editor.putString("register","true");
             editor.apply();

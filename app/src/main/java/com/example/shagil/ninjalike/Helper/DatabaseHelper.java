@@ -142,7 +142,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return level;
     }
 
-    public void insertQuestions(List<FeedItem> feedItems) {
+    public void insertQuestions() {
         /*String delete="DELETE FROM "+QUESTIONS_TABLE;
         SQLiteDatabase db=this.getWritableDatabase();
         db.execSQL(delete);
@@ -156,7 +156,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues cv1=new ContentValues();
         for (int i=0;i<quizQuestionsList.size();i++){
             cv.put(QID,i);
-            cv.put(QUESTION,feedItems.get(i).getName() );
+            cv.put(QUESTION,quizQuestionsList.get(i).getQuestion() );
             cv.put(CORRECTANS,quizQuestionsList.get(i).getCorrectAnswer());
 
             cv.put(SKILLS,quizQuestionsList.get(i).getLevel());
@@ -227,8 +227,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void createLevelSolvedTable(String skill) {
-
-       // String createTable="DROP TABLE `"+ LoginActivity.userName+"_"+text+"`";
         String createTable="CREATE TABLE IF NOT EXISTS `"+ LoginActivity.userName+"_"+skill+"` ("+USERNAME+" text, "+QID+" text primary key , "+" solved text default 'false' )";
         SQLiteDatabase db=this.getWritableDatabase();
         db.execSQL(createTable);
@@ -241,7 +239,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
        String insertIntoTable="INSERT INTO `"+LoginActivity.userName+"_"+skill+"` values ('"+LoginActivity.userName+"','"+qid+"', '"+solved+"')";
         SQLiteDatabase db=this.getWritableDatabase();
         db.execSQL(insertIntoTable);
-        Log.v("InsertIntoSolved","inserted");
+        Log.v("Initialize table","initialized");
     }
 
     public ArrayList<Integer> getQidLevelSolvedTable(String skill) {
@@ -320,7 +318,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(createTable);
         Log.v("ScoreTable","table initialised");
     }
-
+//not used
     public void updateScoreTable(String skill, String solved, String unsolved, String score) {
         String updateTable="UPDATE `"+LoginActivity.userName+"_score` SET score = score "+score+", solved = solved "+solved+", unsolved = unsolved "+unsolved+" where skill = '"+skill+"'";
         SQLiteDatabase db=this.getWritableDatabase();
@@ -352,8 +350,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ScoreCard scoreCard=new ScoreCard();
         if (c.moveToFirst()){
             scoreCard.setSkill(c.getString(0));
+            Log.v("String",c.getString(0));
             scoreCard.setScore(c.getInt(1));
+            Log.v("String",c.getString(1));
             scoreCard.setSolved(c.getInt(2));
+            Log.v("String",c.getString(2));
             scoreCard.setUnsolved(c.getInt(3));
         }
         c.close();
@@ -395,5 +396,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         c.moveToFirst();
         return c.getInt(0);
 
+    }
+
+    public void setAchievedLevel(String skill) {
+        String setAchieved="INSERT INTO "+USERS_TABLE_ACH_LEVEL+" VALUES ('"+LoginActivity.userName+"','"+skill+"')";
+        SQLiteDatabase db=this.getWritableDatabase();
+        db.execSQL(setAchieved);
     }
 }

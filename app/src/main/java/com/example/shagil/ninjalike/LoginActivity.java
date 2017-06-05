@@ -59,7 +59,11 @@ public class LoginActivity extends AppCompatActivity {
             editor.apply();
             insertLevels();
             insertQuestions();
+            DatabaseHelper dbHelper=new DatabaseHelper(this);
+            dbHelper.insertQuestions();
+
         }
+
 
 
 
@@ -158,7 +162,7 @@ public class LoginActivity extends AppCompatActivity {
                 Log.v("FeedItems",feedItems.toString());
             }
             DatabaseHelper dbHelper=new DatabaseHelper(this);
-            dbHelper.insertQuestions(feedItems);
+           // dbHelper.insertQuestions(feedItems);
 
         }catch (JSONException e){
             e.printStackTrace();

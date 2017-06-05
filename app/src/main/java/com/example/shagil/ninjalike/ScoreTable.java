@@ -3,6 +3,7 @@ package com.example.shagil.ninjalike;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -32,9 +33,14 @@ public class ScoreTable extends AppCompatActivity {
         ScoreCard scoreCard= dbHelper.getScores(skill);
 
         skillTV.setText(scoreCard.getSkill());
+        Log.v("Skill",scoreCard.getSkill());
         score.setText(String.valueOf(scoreCard.getScore()));
+        Log.v("Score",String.valueOf(scoreCard.getScore()));
         solved.setText(String.valueOf(scoreCard.getSolved()));
         unsolved.setText(String.valueOf(scoreCard.getUnsolved()));
+        if (scoreCard.getUnsolved()==0){
+            dbHelper.setAchievedLevel(skill);
+        }
 
         playAgain.setOnClickListener(new View.OnClickListener() {
             @Override
