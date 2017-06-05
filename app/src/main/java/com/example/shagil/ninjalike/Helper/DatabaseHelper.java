@@ -58,10 +58,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_USERS="CREATE TABLE IF NOT EXISTS "+USERS_TABLE+" ("+USERNAME+" TEXT PRIMARY KEY,"+PASSWORD+" TEXT"+")";
     private static final String TABLE_USER_CUR_LEVEL="CREATE TABLE IF NOT EXISTS "+USERS_TABLE_CUR_LEVEL+" ("+USERNAME+" TEXT UNIQUE,"+CURRENT_LEVEL+" TEXT,"+"FOREIGN KEY ("+USERNAME+") REFERENCES "+
             USERS_TABLE+" ("+USERNAME+"), FOREIGN KEY ("+CURRENT_LEVEL+") REFERENCES "+ SKILLS_TABLE+" ("+SKILLS+")"+")";
-    private static final String TABLE_USER_ARCHIEVE_LEVELS="CREATE TABLE IF NOT EXISTS "+USERS_TABLE_ACH_LEVEL+" ("+USERNAME+" TEXT,"+ACHIEVED_LEVELS+" TEXT,"+"FOREIGN KEY ("+USERNAME+") REFERENCES "+
+    private static final String TABLE_USER_ACHIEVED_LEVELS="CREATE TABLE IF NOT EXISTS "+USERS_TABLE_ACH_LEVEL+" ("+USERNAME+" TEXT,"+ACHIEVED_LEVELS+" TEXT,"+"FOREIGN KEY ("+USERNAME+") REFERENCES "+
             USERS_TABLE+"   ("+USERNAME+"), "+"FOREIGN KEY ("+ACHIEVED_LEVELS+") REFERENCES "+ SKILLS_TABLE+" ("+SKILLS+")"+")";
     private static final String TABLE_SKILLS_TABLE="CREATE TABLE IF NOT EXISTS "+SKILLS_TABLE+" ("+SKILLS+" TEXT PRIMARY KEY,"+SKILL_IMAGE+ " BLOB "+")";
-    private static final String TABLE_QUESTIONS_TABLE="CREATE TABLE IF NOT EXISTS "+QUESTIONS_TABLE+" ("+QID+" INTEGER PRIMARY KEY AUTOINCREMENT,"+QUESTION+" TEXT,"+
+    private static final String TABLE_QUESTIONS_TABLE="CREATE TABLE IF NOT EXISTS "+QUESTIONS_TABLE+" ("+QID+" INTEGER ,"+QUESTION+" TEXT,"+
             CORRECTANS+" TEXT,"+SKILLS+" TEXT, "+"FOREIGN KEY ("+SKILLS+") REFERENCES "+SKILLS_TABLE+" ("+SKILLS+")"+")";
     private static final String TABLE_OPTIONS_TABLE="CREATE TABLE IF NOT EXISTS "+OPTIONS_TABLE+" ("+QID+" INTEGER PRIMARY KEY AUTOINCREMENT,"+OPTION1+" TEXT,"+
             OPTION2+" TEXT,"+OPTION3+" TEXT,"+OPTION4+" TEXT, "+"FOREIGN KEY ("+QID+") REFERENCES "+QUESTIONS_TABLE+" ("+QID+")"+")";
@@ -80,7 +80,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(TABLE_USERS);
         db.execSQL(TABLE_USER_CUR_LEVEL);
-        db.execSQL(TABLE_USER_ARCHIEVE_LEVELS);
+        db.execSQL(TABLE_USER_ACHIEVED_LEVELS);
         db.execSQL(TABLE_SKILLS_TABLE);
         db.execSQL(TABLE_QUESTIONS_TABLE);
         db.execSQL(TABLE_OPTIONS_TABLE);
@@ -90,7 +90,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_USERS);
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_USER_CUR_LEVEL);
-        db.execSQL("DROP TABLE IF EXISTS "+TABLE_USER_ARCHIEVE_LEVELS);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_USER_ACHIEVED_LEVELS);
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_SKILLS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_QUESTIONS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_OPTIONS_TABLE);
@@ -304,9 +304,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.v("InsertIntoSolved","inserted");
     }
 
-    public void createScoreTable() {
+    public void createScoreTable(String userName) {
        // String createTable="DROP TABLE `"+LoginActivity.userName+"_score`";
-        String createTable="CREATE TABLE IF NOT EXISTS `"+ LoginActivity.userName+"_score` ( skill text primary key, score integer, solved integer, unsolved integer )";
+        String createTable="CREATE TABLE IF NOT EXISTS `"+userName+"_score` ( skill text primary key, score integer, solved integer, unsolved integer )";
         SQLiteDatabase db=this.getWritableDatabase();
         db.execSQL(createTable);
         Log.v("scoreTable","table created");
@@ -380,5 +380,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(resetScore);
         String resetSolvedTable="UPDATE `"+LoginActivity.userName+"_"+skill+"` SET solved= 'false'";
         db.execSQL(resetSolvedTable);
+    }
+
+    public void insertIntoUserCurrentLevel(String userName) {
+        SQLiteDatabase db=this.getWritableDatabase();
+        String insertFirstLevel="INSERT INTO "+USERS_TABLE_CUR_LEVEL+" VALUES ('"+userName+"', '"+QuizQuestions.levels[0]+"')";
+        db.execSQL(insertFirstLevel);
+    }
+
+    public int getUserAchievedLevels(String userName) {
+        SQLiteDatabase db=this.getReadableDatabase();
+        String getAchievedLevels="SELECT count("+ACHIEVED_LEVELS+") FROM "+USERS_TABLE_ACH_LEVEL+" WHERE "+USERNAME+" = '"+userName+"'";
+        Cursor c=db.rawQuery(getAchievedLevels,null);
+        c.moveToFirst();
+        return c.getInt(0);
+
     }
 }

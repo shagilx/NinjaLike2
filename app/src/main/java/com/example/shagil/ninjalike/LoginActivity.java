@@ -38,7 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     public static String userName;
     SharedPreferences pref;
     SharedPreferences.Editor editor;
-    public static final String[] levels={"C++","C","Python","Java"};
+    //public static final String[] levels={"C","C++","Python","Java"};
     public static final String MY_PREF_NAME="userProfile";
     private String URL_FEED="http://api.androidhive.info/feed/feed.json";
     @Override
@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
         signUpButton=(Button)findViewById(R.id.gotosignupbutton);
 
         pref=getPreferences(MODE_PRIVATE);
-        //insertQuestions();
+
 
         if (!pref.contains("register")){
             editor=pref.edit();
@@ -60,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
             insertLevels();
             insertQuestions();
         }
+
 
 
 
@@ -126,10 +127,10 @@ public class LoginActivity extends AppCompatActivity {
             });
             AppController.getInstance().addToRequestQueue(jsonReq);
         }
-      //  db.insertQuestions(feedItems);
     }
 
     private void insertLevels() {
+        String[] levels=QuizQuestions.levels;
         for (int i=0;i<levels.length;i++) {
             DatabaseHelper db=new DatabaseHelper(getApplicationContext());
             String url="drawable/"+"level_"+(i+1);
@@ -162,6 +163,5 @@ public class LoginActivity extends AppCompatActivity {
         }catch (JSONException e){
             e.printStackTrace();
         }
-        //getNextQuestion(feedItems.iterator().next());
     }
 }

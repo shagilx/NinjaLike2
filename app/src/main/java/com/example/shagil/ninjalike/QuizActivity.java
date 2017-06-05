@@ -2,6 +2,7 @@ package com.example.shagil.ninjalike;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,6 +35,7 @@ public class QuizActivity extends AppCompatActivity {
     SharedPreferences pref;
     SharedPreferences.Editor editor;
     static Iterator<QuizQuestion> iterator;
+    FragmentManager fm=getSupportFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,9 +77,17 @@ public class QuizActivity extends AppCompatActivity {
         quizQuestionList2=dbHelper.getQuestionOfSkill(skill,incorrectAns);
 
         iterator=quizQuestionList2.iterator();
+            try{
+                getNextQuestion(iterator.next());
+            }catch (NoSuchElementException e){
+                Bundle bundle=new Bundle();
+                bundle.putString("skill",skill);
+                AlertDialogFragment alertDialogFragment=new AlertDialogFragment();
+                alertDialogFragment.setArguments(bundle);
+                alertDialogFragment.show(fm,"Alert Dialog");
 
-            getNextQuestion(iterator.next());
-
+                Toast.makeText(getApplicationContext()," ",Toast.LENGTH_SHORT).show();
+            }
     }
 
         private void getNextQuestion(final QuizQuestion next) {

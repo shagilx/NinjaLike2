@@ -20,16 +20,20 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.shagil.ninjalike.Helper.DatabaseHelper;
+import com.example.shagil.ninjalike.data.QuizQuestion;
 
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 public class ChooseSkillsActivity extends AppCompatActivity {
     Button nextButton;
-    SharedPreferences pref;
+    SharedPreferences pref,pref2;
     SharedPreferences.Editor editor;
     FragmentManager fm=getSupportFragmentManager();
     public static String skill;
-
+    List<QuizQuestion> quizQuestionList;
+    RadioButton radioButton1;
+    public static final String MY_PREFS_NAME = "MyPrefsFile";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +44,12 @@ public class ChooseSkillsActivity extends AppCompatActivity {
 
         DatabaseHelper dbHelper=new DatabaseHelper(this);
         String[] levels=dbHelper.getLevels();
+        int achievedLevelCount=dbHelper.getUserAchievedLevels(LoginActivity.userName);
+        Log.v("achievedLevel",String.valueOf(achievedLevelCount));
 
         pref=getPreferences(MODE_PRIVATE);
-
+        pref2=getSharedPreferences(MY_PREFS_NAME,MODE_PRIVATE);
+        editor=pref2.edit();
 
         LinearLayout linearLayout=(LinearLayout)findViewById(R.id.chooseSkillsLayout);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -50,18 +57,24 @@ public class ChooseSkillsActivity extends AppCompatActivity {
         leftMargin.leftMargin=50;
 
         final RadioGroup rg=new RadioGroup(this);
+        radioButton1 = new RadioButton(this);
         rg.setOrientation(LinearLayout.VERTICAL);
         for (int i=0;i<levels.length;i++) {
             String url="levelRadioButton"+(i);
 
-            RadioButton radioButton1 = new RadioButton(this);
+            radioButton1 = new RadioButton(this);
             radioButton1.setText(levels[i]);
             radioButton1.setId(i);
             radioButton1.setTag(url);
+            radioButton1.setEnabled(false);
+            if (i<=achievedLevelCount)
+                radioButton1.setEnabled(true);
             rg.addView(radioButton1,leftMargin);
             Log.v("RBid",String.valueOf(radioButton1.getTag()));
         }
         ((ViewGroup)findViewById(R.id.radiogroup)).addView(rg);
+
+
 
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,34 +87,27 @@ public class ChooseSkillsActivity extends AppCompatActivity {
                     skill=radioButton.getText().toString();
                     DatabaseHelper dbHelper=new DatabaseHelper(getApplicationContext());
                     dbHelper.createLevelSolvedTable(skill);
-                    dbHelper.createScoreTable();
+                    quizQuestionList=dbHelper.getQuestionOfSkill(skill);
+                    for (int i=0;i<quizQuestionList.size();i++) {
+                        dbHelper.initializeLevelSolvedTable("false", skill, quizQuestionList.get(i).getQid());
+                    }
+
                     if (!pref.contains("register")){
                         editor=pref.edit();
                         editor.putString("register","true");
                         editor.apply();
-
                         dbHelper.initaliseScoreTable(skill);
-                       // dbHelper.resetMyScore(skill);
                     }
-                   // Toast.makeText(getApplicationContext(), radioButton.getText(), Toast.LENGTH_SHORT).show();
-
-
-
                     boolean haveQuestions=dbHelper.checkUnsolved(skill);
-
-
                     if (haveQuestions) {
-
-
                         Intent intent = new Intent(ChooseSkillsActivity.this, QuizActivity.class);
-                       startActivity(intent);
+                        startActivity(intent);
                     }else{
                         Bundle bundle=new Bundle();
                         bundle.putString("skill",skill);
                         AlertDialogFragment alertDialogFragment=new AlertDialogFragment();
                         alertDialogFragment.setArguments(bundle);
                         alertDialogFragment.show(fm,"Alert Dialog");
-
                         Toast.makeText(getApplicationContext(),"Solved all Questions",Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -126,7 +132,7 @@ public class ChooseSkillsActivity extends AppCompatActivity {
                 SharedPreferences sharedPreferences=getSharedPreferences(LoginActivity.MY_PREF_NAME,MODE_PRIVATE);
                 SharedPreferences.Editor editor=sharedPreferences.edit();
                 editor.clear();
-                editor.commit();
+                editor.apply();
         }
         return super.onOptionsItemSelected(item);
     }

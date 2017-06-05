@@ -33,10 +33,12 @@ public class SignUpActivity extends AppCompatActivity {
                 DatabaseHelper dbHelper=new DatabaseHelper(getApplicationContext());
                 try {
                     dbHelper.createUser(userName, password);
+                    dbHelper.insertIntoUserCurrentLevel(userName);
+                    dbHelper.createScoreTable(userName);
                     Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
                     startActivity(intent);
                 }catch(SQLiteConstraintException e){
-                    Toast.makeText(getApplicationContext(),"Use another uername",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Use another username",Toast.LENGTH_SHORT).show();
                 }
             }
         });
