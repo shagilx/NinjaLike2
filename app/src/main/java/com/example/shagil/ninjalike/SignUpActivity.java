@@ -37,6 +37,7 @@ public class SignUpActivity extends AppCompatActivity {
                     dbHelper.createScoreTable(userName);
                     Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
                     startActivity(intent);
+                    finish();
                 }catch(SQLiteConstraintException e){
                     Toast.makeText(getApplicationContext(),"Use another username",Toast.LENGTH_SHORT).show();
                 }

@@ -36,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText userNameText,passwordText;
     Button loginButton,signUpButton;
     public static String userName;
-    SharedPreferences pref;
+    SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     //public static final String[] levels={"C","C++","Python","Java"};
     public static final String MY_PREF_NAME="userProfile";
@@ -49,27 +49,18 @@ public class LoginActivity extends AppCompatActivity {
         passwordText=(EditText)findViewById(R.id.passwordLoginText);
         loginButton=(Button)findViewById(R.id.Loginbutton);
         signUpButton=(Button)findViewById(R.id.gotosignupbutton);
-
-        pref=getPreferences(MODE_PRIVATE);
-
-
-        if (!pref.contains("register")){
-            editor=pref.edit();
-            editor.putString("register","true");
-            editor.apply();
+        sharedPreferences=getPreferences(MODE_PRIVATE);
+        if (!sharedPreferences.getBoolean("AlreadyHere",false)) {
             insertLevels();
             insertQuestions();
-            DatabaseHelper dbHelper=new DatabaseHelper(this);
+            DatabaseHelper dbHelper = new DatabaseHelper(this);
             dbHelper.insertQuestions();
-
+            editor=sharedPreferences.edit();
+            editor.putBoolean("AlreadyHere",true);
+            editor.apply();
         }
 
-
-
-
-
-
-        signUpButton.setOnClickListener(new View.OnClickListener() {
+         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(LoginActivity.this,SignUpActivity.class);
@@ -87,11 +78,6 @@ public class LoginActivity extends AppCompatActivity {
                 if (valid){
                     Intent intent=new Intent(LoginActivity.this,ChooseSkillsActivity.class);
                     userName=username;
-                    pref=getSharedPreferences(MY_PREF_NAME,MODE_PRIVATE);
-                    editor=pref.edit();
-                    editor.putString("username",username);
-                    editor.apply();
-                    //intent.putExtra("username",username);
                     startActivity(intent);
                     finish();
                 }else{

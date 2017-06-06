@@ -32,8 +32,6 @@ public class QuizActivity extends AppCompatActivity {
     static int score=0;
     String skill;
     static final String MY_PREF_NAME="sharedPref";
-    SharedPreferences pref;
-    SharedPreferences.Editor editor;
     static Iterator<QuizQuestion> iterator;
     FragmentManager fm=getSupportFragmentManager();
 
@@ -59,15 +57,6 @@ public class QuizActivity extends AppCompatActivity {
      /*   for (int i=0;i<quizQuestionList.size();i++){
             incorrectAns.add(i,quizQuestionList.get(i).getQid());
         }*/
-
-        pref=getPreferences(MODE_PRIVATE);
-        editor = pref.edit();
-        if (!pref.contains("register")){
-           
-
-            editor.putString("register","true");
-            editor.apply();
-        }
 
         incorrectAns=dbHelper.getQidLevelSolvedTable(skill);
         Log.v("false",incorrectAns.toString());
@@ -117,6 +106,7 @@ public class QuizActivity extends AppCompatActivity {
                             startActivity(intent);
                             finish();
                         }
+
 
                     }else {
                         Toast.makeText(getApplicationContext(),"InCorrect Answer",Toast.LENGTH_SHORT).show();

@@ -27,8 +27,6 @@ import java.util.List;
 
 public class ChooseSkillsActivity extends AppCompatActivity {
     Button nextButton;
-    SharedPreferences pref;
-    SharedPreferences.Editor editor;
     FragmentManager fm=getSupportFragmentManager();
     public static String skill;
     List<QuizQuestion> quizQuestionList;
@@ -47,9 +45,6 @@ public class ChooseSkillsActivity extends AppCompatActivity {
         int achievedLevelCount=dbHelper.getUserAchievedLevels(LoginActivity.userName);
         Log.v("achievedLevel",String.valueOf(achievedLevelCount));
 
-        pref=getPreferences(MODE_PRIVATE);
-
-
         LinearLayout linearLayout=(LinearLayout)findViewById(R.id.chooseSkillsLayout);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams leftMargin=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -66,6 +61,8 @@ public class ChooseSkillsActivity extends AppCompatActivity {
             radioButton1.setId(i);
             radioButton1.setTag(url);
             radioButton1.setEnabled(false);
+            if (i==0)
+                radioButton1.setEnabled(true);
             if (i<=achievedLevelCount-1)
                 radioButton1.setEnabled(true);
             rg.addView(radioButton1,leftMargin);
@@ -87,7 +84,7 @@ public class ChooseSkillsActivity extends AppCompatActivity {
                     dbHelper.createLevelSolvedTable(skill);
                     quizQuestionList=dbHelper.getQuestionOfSkill(skill);
                     Log.v("questionList2",String.valueOf(quizQuestionList.size()));
-                    if (!pref.contains("register")){
+                   /* if (!pref.contains("register")){
                         editor=pref.edit();
                         editor.putString("register","true");
                         editor.apply();
@@ -96,7 +93,7 @@ public class ChooseSkillsActivity extends AppCompatActivity {
                         for (int i=0;i<quizQuestionList.size();i++) {
                             dbHelper.initializeLevelSolvedTable("false", skill, quizQuestionList.get(i).getQid());
                         }
-                    }
+                    }*/
 
 
 
