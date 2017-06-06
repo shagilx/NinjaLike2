@@ -47,6 +47,7 @@ public class ScoreTable extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent=new Intent(ScoreTable.this,QuizActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -55,6 +56,7 @@ public class ScoreTable extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent=new Intent(ScoreTable.this,ChooseSkillsActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 

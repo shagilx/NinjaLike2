@@ -35,6 +35,7 @@ public class AlertDialogFragment extends android.support.v4.app.DialogFragment {
                         Intent intent=new Intent(getActivity(),ScoreTable.class);
                         intent.putExtra("skill",skill);
                         startActivity(intent);
+
                     }
                 })
                 .setNegativeButton("Reset My Score", new DialogInterface.OnClickListener() {
@@ -43,6 +44,7 @@ public class AlertDialogFragment extends android.support.v4.app.DialogFragment {
                         dbHelper.resetMyScore(skill);
                         Intent intent=new Intent(getActivity(),QuizActivity.class);
                         startActivity(intent);
+
 
                     }
                 }).create();

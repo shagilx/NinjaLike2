@@ -33,7 +33,6 @@ public class SignUpActivity extends AppCompatActivity {
                 DatabaseHelper dbHelper=new DatabaseHelper(getApplicationContext());
                 try {
                     dbHelper.createUser(userName, password);
-                    dbHelper.insertIntoUserCurrentLevel(userName);
                     dbHelper.createScoreTable(userName);
                     Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
                     startActivity(intent);

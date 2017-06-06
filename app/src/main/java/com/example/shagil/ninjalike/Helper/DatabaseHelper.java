@@ -56,7 +56,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String OPTION4="option4";
 
     private static final String TABLE_USERS="CREATE TABLE IF NOT EXISTS "+USERS_TABLE+" ("+USERNAME+" TEXT PRIMARY KEY,"+PASSWORD+" TEXT"+")";
-    private static final String TABLE_USER_CUR_LEVEL="CREATE TABLE IF NOT EXISTS "+USERS_TABLE_CUR_LEVEL+" ("+USERNAME+" TEXT UNIQUE,"+CURRENT_LEVEL+" TEXT,"+"FOREIGN KEY ("+USERNAME+") REFERENCES "+
+    private static final String TABLE_USER_CUR_LEVEL="CREATE TABLE IF NOT EXISTS "+USERS_TABLE_CUR_LEVEL+" ("+USERNAME+" TEXT ,"+CURRENT_LEVEL+" TEXT,"+"FOREIGN KEY ("+USERNAME+") REFERENCES "+
             USERS_TABLE+" ("+USERNAME+"), FOREIGN KEY ("+CURRENT_LEVEL+") REFERENCES "+ SKILLS_TABLE+" ("+SKILLS+")"+")";
     private static final String TABLE_USER_ACHIEVED_LEVELS="CREATE TABLE IF NOT EXISTS "+USERS_TABLE_ACH_LEVEL+" ("+USERNAME+" TEXT,"+ACHIEVED_LEVELS+" TEXT,"+"FOREIGN KEY ("+USERNAME+") REFERENCES "+
             USERS_TABLE+"   ("+USERNAME+"), "+"FOREIGN KEY ("+ACHIEVED_LEVELS+") REFERENCES "+ SKILLS_TABLE+" ("+SKILLS+")"+")";
@@ -143,50 +143,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void insertQuestions() {
+        for (int j=0;j<QuizQuestions.levels.length;j++) {
         /*String delete="DELETE FROM "+QUESTIONS_TABLE;
         SQLiteDatabase db=this.getWritableDatabase();
         db.execSQL(delete);
         Log.v("Delete","table deleted");*/
 
-        QuizQuestions quizQuestions=new QuizQuestions();
-        List<QuizQuestion> quizQuestionsList=quizQuestions.getQuizQuestions();
+            QuizQuestions quizQuestions = new QuizQuestions();
+            List<QuizQuestion> quizQuestionsList = quizQuestions.getQuizQuestions();
 
-        SQLiteDatabase db=this.getWritableDatabase();
-        ContentValues cv=new ContentValues();
-        ContentValues cv1=new ContentValues();
-        for (int i=0;i<quizQuestionsList.size();i++){
-            cv.put(QID,i);
-            cv.put(QUESTION,quizQuestionsList.get(i).getQuestion() );
-            cv.put(CORRECTANS,quizQuestionsList.get(i).getCorrectAnswer());
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            ContentValues cv1 = new ContentValues();
+            for (int i = 0; i < quizQuestionsList.size(); i++) {
+                cv.put(QID, i);
+                cv.put(QUESTION, quizQuestionsList.get(i).getQuestion());
+                cv.put(CORRECTANS, quizQuestionsList.get(i).getCorrectAnswer());
 
-            cv.put(SKILLS,quizQuestionsList.get(i).getLevel());
+                cv.put(SKILLS, QuizQuestions.levels[j]);
 
-            String[] answers=quizQuestionsList.get(i).getAnswers();
-            cv1.put(QID,i);
-            cv1.put(OPTION1,answers[0]);
-            Log.v("option1",answers[0]);
+                String[] answers = quizQuestionsList.get(i).getAnswers();
+                cv1.put(QID, i);
+                cv1.put(OPTION1, answers[0]);
+                Log.v("option1", answers[0]);
 
-            cv1.put(OPTION2,answers[1]);
-            Log.v("option2",answers[1]);
+                cv1.put(OPTION2, answers[1]);
+                Log.v("option2", answers[1]);
 
-            cv1.put(OPTION3,answers[2]);
-            Log.v("option3",answers[2]);
+                cv1.put(OPTION3, answers[2]);
+                Log.v("option3", answers[2]);
 
-            cv1.put(OPTION4,answers[3]);
-            Log.v("option4",answers[3]);
+                cv1.put(OPTION4, answers[3]);
+                Log.v("option4", answers[3]);
 
-            db.insert(QUESTIONS_TABLE,null,cv);
-            db.insert(OPTIONS_TABLE,null,cv1);
+                db.insert(QUESTIONS_TABLE, null, cv);
+                db.insert(OPTIONS_TABLE, null, cv1);
 
+            }
+
+            db.close();
         }
-        db.close();
     }
-
-    public void createTempSkillTable(CharSequence text) {
-        String TEMP_QUESTION_TABLE="CREATE TABLE IF NOT EXISTS "+QUESTIONS_TABLE+" ("+QID+" INTEGER PRIMARY KEY AUTOINCREMENT,"+QUESTION+" TEXT,"+
-                CORRECTANS+" TEXT,"+SKILLS+" TEXT, "+"FOREIGN KEY ("+SKILLS+") REFERENCES "+SKILLS_TABLE+" ("+SKILLS+")"+")";
-    }
-
 
     public List<QuizQuestion> getQuestionOfSkill(String skill) {
         List<QuizQuestion> quizQuestionList = new ArrayList<>();
@@ -383,15 +380,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(resetSolvedTable);
     }
 
-    public void insertIntoUserCurrentLevel(String userName) {
+    public void insertIntoUserCurrentLevel(String skill) {
         SQLiteDatabase db=this.getWritableDatabase();
-        String insertFirstLevel="INSERT INTO "+USERS_TABLE_CUR_LEVEL+" VALUES ('"+userName+"', '"+QuizQuestions.levels[0]+"')";
+        String insertFirstLevel="INSERT INTO "+USERS_TABLE_CUR_LEVEL+" VALUES ('"+LoginActivity.userName+"', '"+skill+"')";
         db.execSQL(insertFirstLevel);
     }
 
     public int getUserAchievedLevels(String userName) {
         SQLiteDatabase db=this.getReadableDatabase();
-        String getAchievedLevels="SELECT count("+ACHIEVED_LEVELS+") FROM "+USERS_TABLE_ACH_LEVEL+" WHERE "+USERNAME+" = '"+userName+"'";
+        String getAchievedLevels="SELECT count( DISTINCT "+ACHIEVED_LEVELS+") FROM "+USERS_TABLE_ACH_LEVEL+" WHERE "+USERNAME+" = '"+userName+"'";
         Cursor c=db.rawQuery(getAchievedLevels,null);
         c.moveToFirst();
         return c.getInt(0);
@@ -402,5 +399,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String setAchieved="INSERT INTO "+USERS_TABLE_ACH_LEVEL+" VALUES ('"+LoginActivity.userName+"','"+skill+"')";
         SQLiteDatabase db=this.getWritableDatabase();
         db.execSQL(setAchieved);
+    }
+
+    public boolean isEntryExist(String skill) {
+        String exist="SELECT * FROM "+USERS_TABLE_CUR_LEVEL+" WHERE "+USERNAME+" = '"+LoginActivity.userName+"' AND "+CURRENT_LEVEL+" = '"+skill+"'";
+        SQLiteDatabase db=this.getReadableDatabase();
+        Cursor c=db.rawQuery(exist,null);
+        Log.v("exist",String.valueOf(c.getCount()));
+        if (c.getCount()>=1)
+            return true;
+        else
+            return false;
+
     }
 }

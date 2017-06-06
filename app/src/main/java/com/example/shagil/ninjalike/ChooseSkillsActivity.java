@@ -31,7 +31,6 @@ public class ChooseSkillsActivity extends AppCompatActivity {
     public static String skill;
     List<QuizQuestion> quizQuestionList;
     RadioButton radioButton1;
-    public static final String MY_PREFS_NAME = "MyPrefsFile";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +62,7 @@ public class ChooseSkillsActivity extends AppCompatActivity {
             radioButton1.setEnabled(false);
             if (i==0)
                 radioButton1.setEnabled(true);
-            if (i<=achievedLevelCount-1)
+            if (i<=achievedLevelCount)
                 radioButton1.setEnabled(true);
             rg.addView(radioButton1,leftMargin);
             Log.v("RBid",String.valueOf(radioButton1.getTag()));
@@ -84,6 +83,15 @@ public class ChooseSkillsActivity extends AppCompatActivity {
                     dbHelper.createLevelSolvedTable(skill);
                     quizQuestionList=dbHelper.getQuestionOfSkill(skill);
                     Log.v("questionList2",String.valueOf(quizQuestionList.size()));
+                    boolean isExist=dbHelper.isEntryExist(skill);
+                    if (!isExist){
+                        dbHelper.initaliseScoreTable(skill);
+                        for (int i=0;i<quizQuestionList.size();i++) {
+                            dbHelper.initializeLevelSolvedTable("false", skill, quizQuestionList.get(i).getQid());
+                        }
+                        dbHelper.insertIntoUserCurrentLevel(skill);
+                    }
+
                    /* if (!pref.contains("register")){
                         editor=pref.edit();
                         editor.putString("register","true");
@@ -101,6 +109,7 @@ public class ChooseSkillsActivity extends AppCompatActivity {
                     if (haveQuestions) {
                         Intent intent = new Intent(ChooseSkillsActivity.this, QuizActivity.class);
                         startActivity(intent);
+                        finish();
                     }else{
                         Bundle bundle=new Bundle();
                         bundle.putString("skill",skill);
