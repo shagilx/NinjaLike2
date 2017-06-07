@@ -1,4 +1,4 @@
-package com.example.shagil.ninjalike.data;
+package com.example.shagil.ninjalike.Activity;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -8,10 +8,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.shagil.ninjalike.Activity.ChooseSkillsActivity;
-import com.example.shagil.ninjalike.Activity.QuizActivity;
 import com.example.shagil.ninjalike.Helper.DatabaseHelper;
 import com.example.shagil.ninjalike.R;
+import com.example.shagil.ninjalike.data.ScoreCard;
+
+/*Activity class to show the score
+* */
 
 public class ScoreTable extends AppCompatActivity {
     String skill;

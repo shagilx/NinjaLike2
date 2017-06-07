@@ -39,6 +39,7 @@ public class SignUpActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 }catch(SQLiteConstraintException e){
+                    //if username already exist
                     Toast.makeText(getApplicationContext(),"Use another username",Toast.LENGTH_SHORT).show();
                 }
             }

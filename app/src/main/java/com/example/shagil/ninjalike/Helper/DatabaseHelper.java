@@ -311,14 +311,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(createTable);
         Log.v("ScoreTable","table initialised");
     }
-//not used
-    public void updateScoreTable(String skill, String solved, String unsolved, String score) {
-        String updateTable="UPDATE `"+LoginActivity.userName+"_score` SET score = score "+score+", solved = solved "+solved+", unsolved = unsolved "+unsolved+" where skill = '"+skill+"'";
-        SQLiteDatabase db=this.getWritableDatabase();
-        db.execSQL(updateTable);
-        Log.v("ScoreTable","Table Updated");
-        Log.v("ScoreTable","Table Updated");
-    }
 
     public ScoreCard getScores(String skill) {
         SQLiteDatabase db=this.getReadableDatabase();

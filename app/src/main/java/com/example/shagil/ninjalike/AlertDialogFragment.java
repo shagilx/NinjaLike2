@@ -9,7 +9,7 @@ import android.support.annotation.NonNull;
 
 import com.example.shagil.ninjalike.Activity.QuizActivity;
 import com.example.shagil.ninjalike.Helper.DatabaseHelper;
-import com.example.shagil.ninjalike.data.ScoreTable;
+import com.example.shagil.ninjalike.Activity.ScoreTable;
 
 /**
  * Created by Siddiqui on 6/1/2017.

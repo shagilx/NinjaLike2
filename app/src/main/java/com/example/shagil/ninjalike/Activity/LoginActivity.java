@@ -47,21 +47,24 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        //initialising widgets
         userNameText=(EditText)findViewById(R.id.userLoginText);
         passwordText=(EditText)findViewById(R.id.passwordLoginText);
         loginButton=(Button)findViewById(R.id.Loginbutton);
         signUpButton=(Button)findViewById(R.id.gotosignupbutton);
+        //get sharedPref to check if the activity is first time opened
         sharedPreferences=getPreferences(MODE_PRIVATE);
         if (!sharedPreferences.getBoolean("AlreadyHere",false)) {
+            //insert skill levels to local db
             insertLevels();
+            //insert questions to local db
             insertQuestions();
-            //DatabaseHelper dbHelper = new DatabaseHelper(this);
-            //dbHelper.insertQuestions();
+            //change the value of key stored in sharedPef
             editor=sharedPreferences.edit();
             editor.putBoolean("AlreadyHere",true);
             editor.apply();
         }
-
+        //signUpButton Click Listener to open the registration activity
          signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,6 +73,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        //Login Button Click Listener which checks the credentials entered into the textFields
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,6 +82,7 @@ public class LoginActivity extends AppCompatActivity {
                 DatabaseHelper dbHelper=new DatabaseHelper(getApplicationContext());
                 boolean valid=dbHelper.checkCredentials(username,password);
                 if (valid){
+                    //if credentials are valid, go to next activity
                     Intent intent=new Intent(LoginActivity.this,ChooseSkillsActivity.class);
                     userName=username;
                     startActivity(intent);
@@ -88,7 +93,10 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
+    // This method gets JSON data from an URL.
     private void insertQuestions() {
+        // get Cache instance.. A class of Volley Library
         Cache cache= AppController.getInstance().getRequestQueue().getCache();
         Cache.Entry entry=cache.get(URL_FEED);
         if (entry!=null){
@@ -120,7 +128,7 @@ public class LoginActivity extends AppCompatActivity {
             AppController.getInstance().addToRequestQueue(jsonReq);
         }
     }
-
+    // This method inserts skill Level to local database.
     private void insertLevels() {
         String[] levels= QuizQuestions.levels;
         for (int i=0;i<levels.length;i++) {
@@ -135,6 +143,7 @@ public class LoginActivity extends AppCompatActivity {
             db.insertLevels(levels[i],bitMapData);
         }
     }
+    //This method parses the Json data received and inserts it into the local database.
     private void parseJsonFeed(JSONObject response) {
         List<FeedItem> feedItems=new ArrayList<>();
         try{
