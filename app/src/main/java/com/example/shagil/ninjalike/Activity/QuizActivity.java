@@ -1,7 +1,6 @@
-package com.example.shagil.ninjalike;
+package com.example.shagil.ninjalike.Activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,7 +12,10 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.shagil.ninjalike.AlertDialogFragment;
 import com.example.shagil.ninjalike.Helper.DatabaseHelper;
+import com.example.shagil.ninjalike.R;
+import com.example.shagil.ninjalike.data.ScoreTable;
 import com.example.shagil.ninjalike.data.QuizQuestion;
 
 import java.util.ArrayList;

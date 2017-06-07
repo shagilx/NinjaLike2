@@ -1,8 +1,10 @@
-package com.example.shagil.ninjalike;
+package com.example.shagil.ninjalike.app;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+
+import com.example.shagil.ninjalike.Activity.LoginActivity;
 
 import java.util.HashMap;
 

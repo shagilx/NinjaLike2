@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.shagil.ninjalike.ScoreTable">
+    tools:context="com.example.shagil.ninjalike.data.ScoreTable">
 
     <TextView
         android:id="@+id/textView7"

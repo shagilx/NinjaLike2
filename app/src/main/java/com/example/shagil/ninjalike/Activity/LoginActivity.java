@@ -1,4 +1,4 @@
-package com.example.shagil.ninjalike;
+package com.example.shagil.ninjalike.Activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,6 +19,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.shagil.ninjalike.Helper.DatabaseHelper;
+import com.example.shagil.ninjalike.data.QuizQuestions;
+import com.example.shagil.ninjalike.R;
 import com.example.shagil.ninjalike.app.AppController;
 import com.example.shagil.ninjalike.data.FeedItem;
 
@@ -53,8 +55,8 @@ public class LoginActivity extends AppCompatActivity {
         if (!sharedPreferences.getBoolean("AlreadyHere",false)) {
             insertLevels();
             insertQuestions();
-            DatabaseHelper dbHelper = new DatabaseHelper(this);
-            dbHelper.insertQuestions();
+            //DatabaseHelper dbHelper = new DatabaseHelper(this);
+            //dbHelper.insertQuestions();
             editor=sharedPreferences.edit();
             editor.putBoolean("AlreadyHere",true);
             editor.apply();
@@ -120,7 +122,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void insertLevels() {
-        String[] levels=QuizQuestions.levels;
+        String[] levels= QuizQuestions.levels;
         for (int i=0;i<levels.length;i++) {
             DatabaseHelper db=new DatabaseHelper(getApplicationContext());
             String url="drawable/"+"level_"+(i+1);
@@ -148,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
                 Log.v("FeedItems",feedItems.toString());
             }
             DatabaseHelper dbHelper=new DatabaseHelper(this);
-           // dbHelper.insertQuestions(feedItems);
+            dbHelper.insertQuestions(feedItems);
 
         }catch (JSONException e){
             e.printStackTrace();

@@ -2,13 +2,14 @@ package com.example.shagil.ninjalike;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.example.shagil.ninjalike.Activity.QuizActivity;
 import com.example.shagil.ninjalike.Helper.DatabaseHelper;
+import com.example.shagil.ninjalike.data.ScoreTable;
 
 /**
  * Created by Siddiqui on 6/1/2017.

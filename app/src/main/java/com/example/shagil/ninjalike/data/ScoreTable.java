@@ -1,4 +1,4 @@
-package com.example.shagil.ninjalike;
+package com.example.shagil.ninjalike.data;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -8,8 +8,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.shagil.ninjalike.Activity.ChooseSkillsActivity;
+import com.example.shagil.ninjalike.Activity.QuizActivity;
 import com.example.shagil.ninjalike.Helper.DatabaseHelper;
-import com.example.shagil.ninjalike.data.ScoreCard;
+import com.example.shagil.ninjalike.R;
 
 public class ScoreTable extends AppCompatActivity {
     String skill;
@@ -20,7 +22,7 @@ public class ScoreTable extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_score_table);
-        skill=ChooseSkillsActivity.skill;
+        skill= ChooseSkillsActivity.skill;
         skillTV=(TextView)findViewById(R.id.skillTV);
         score=(TextView)findViewById(R.id.scoreTV);
         solved=(TextView)findViewById(R.id.solvedTV);

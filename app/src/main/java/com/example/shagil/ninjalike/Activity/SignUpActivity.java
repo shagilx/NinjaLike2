@@ -1,4 +1,4 @@
-package com.example.shagil.ninjalike;
+package com.example.shagil.ninjalike.Activity;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteConstraintException;
@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.shagil.ninjalike.Helper.DatabaseHelper;
+import com.example.shagil.ninjalike.R;
 
 public class SignUpActivity extends AppCompatActivity {
     EditText userNameEditText,passwordEditText;

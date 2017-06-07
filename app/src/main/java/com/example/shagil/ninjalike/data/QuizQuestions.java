@@ -1,4 +1,4 @@
-package com.example.shagil.ninjalike;
+package com.example.shagil.ninjalike.data;
 
 import com.example.shagil.ninjalike.data.QuizQuestion;
 

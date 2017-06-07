@@ -7,10 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.example.shagil.ninjalike.LoginActivity;
+import com.example.shagil.ninjalike.Activity.LoginActivity;
 import com.example.shagil.ninjalike.data.FeedItem;
 import com.example.shagil.ninjalike.data.QuizQuestion;
-import com.example.shagil.ninjalike.QuizQuestions;
+import com.example.shagil.ninjalike.data.QuizQuestions;
 import com.example.shagil.ninjalike.data.ScoreCard;
 
 import java.util.ArrayList;
@@ -142,12 +142,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return level;
     }
 
-    public void insertQuestions() {
+    public void insertQuestions(List<FeedItem> feedItems) {
         for (int j=0;j<QuizQuestions.levels.length;j++) {
-        /*String delete="DELETE FROM "+QUESTIONS_TABLE;
-        SQLiteDatabase db=this.getWritableDatabase();
-        db.execSQL(delete);
-        Log.v("Delete","table deleted");*/
 
             QuizQuestions quizQuestions = new QuizQuestions();
             List<QuizQuestion> quizQuestionsList = quizQuestions.getQuizQuestions();
@@ -157,7 +153,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             ContentValues cv1 = new ContentValues();
             for (int i = 0; i < quizQuestionsList.size(); i++) {
                 cv.put(QID, i);
-                cv.put(QUESTION, quizQuestionsList.get(i).getQuestion());
+                cv.put(QUESTION, feedItems.get(i).getName());
                 cv.put(CORRECTANS, quizQuestionsList.get(i).getCorrectAnswer());
 
                 cv.put(SKILLS, QuizQuestions.levels[j]);

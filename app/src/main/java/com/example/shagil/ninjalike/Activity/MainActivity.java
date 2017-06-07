@@ -1,4 +1,4 @@
-package com.example.shagil.ninjalike;
+package com.example.shagil.ninjalike.Activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,10 +15,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+import com.example.shagil.ninjalike.R;
 import com.example.shagil.ninjalike.app.AppController;
 import com.example.shagil.ninjalike.data.FeedItem;
-import com.example.shagil.ninjalike.data.QuizQuestion;
 
 import org.json.JSONArray;
 import org.json.JSONException;
