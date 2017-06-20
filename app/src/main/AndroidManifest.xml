@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.shagil.ninjalike">
-    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".app.AppController"
         android:allowBackup="true"
@@ -20,7 +22,8 @@
         <activity android:name=".Activity.SignUpActivity" />
         <activity android:name=".Activity.ChooseSkillsActivity" />
         <activity android:name=".Activity.QuizActivity" />
-        <activity android:name=".Activity.ScoreTable"></activity>
+        <activity android:name=".Activity.ScoreTable" />
+        <activity android:name=".Activity.LevelActivity"></activity>
     </application>
 
 </manifest>

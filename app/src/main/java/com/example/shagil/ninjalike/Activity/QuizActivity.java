@@ -79,10 +79,10 @@ public class QuizActivity extends AppCompatActivity {
         rg.clearCheck();
         qno.setText(String.valueOf(next.getQid() + 1));
         question.setText(next.getQuestion());
-        option1.setText(next.getAnswers()[0]);
-        option2.setText(next.getAnswers()[1]);
-        option3.setText(next.getAnswers()[2]);
-        option4.setText(next.getAnswers()[3]);
+        option1.setText(next.getOptions()[0]);
+        option2.setText(next.getOptions()[1]);
+        option3.setText(next.getOptions()[2]);
+        option4.setText(next.getOptions()[3]);
         final DatabaseHelper dbHelper=new DatabaseHelper(this);
 
 

@@ -9,12 +9,21 @@ public class ScoreCard {
     int solved;
     int unsolved;
     int score;
+    String level;
 
     public ScoreCard(String skill, int solved, int unsolved, int score) {
         this.skill = skill;
         this.solved = solved;
         this.unsolved = unsolved;
         this.score = score;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
     }
 
     public int getScore() {

@@ -7,32 +7,34 @@ package com.example.shagil.ninjalike.data;
 public class QuizQuestion {
     private int qid;
     private int correctAnswerIndex;
-    private String correctAnswer;
+    private String[] correctAnswer;
+    private String skill;
     private String level;
 
     private String question;
 
-    private String[] answers;
+    private String[] options;
 
 
     public QuizQuestion() {
     }
 
-    public QuizQuestion(String question, int correctAnswerIndex, String level,
-                        String[] answers) {
+    public QuizQuestion(String question, int correctAnswerIndex, String skill,
+                        String[] options,String level) {
         this.question = question;
-        this.answers = answers;
+        this.options = options;
         this.correctAnswerIndex = correctAnswerIndex;
+        this.skill=skill;
         this.level=level;
     }
 
-    public QuizQuestion(int qid, int correctAnswerIndex, String correctAnswer, String level, String question, String[] answers) {
-        this.qid = qid;
-        this.correctAnswerIndex = correctAnswerIndex;
-        this.correctAnswer = correctAnswer;
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
         this.level = level;
-        this.question = question;
-        this.answers = answers;
     }
 
     public int getQid() {
@@ -47,30 +49,32 @@ public class QuizQuestion {
         this.correctAnswerIndex = correctAnswerIndex;
     }
 
-    public void setCorrectAnswer(String correctAnswer) {
+    public void setCorrectAnswer(String[] correctAnswer) {
         this.correctAnswer = correctAnswer;
     }
-    public String getLocalCorrectAnswer(){
+
+
+    public String[] getLocalCorrectAnswer(){
         return correctAnswer;
     }
 
-    public void setLevel(String level) {
-        this.level = level;
+    public void setSkill(String skill) {
+        this.skill = skill;
     }
 
     public void setQuestion(String question) {
         this.question = question;
     }
 
-    public void setAnswers(String[] answers) {
-        this.answers = answers;
+    public void setOptions(String[] options) {
+        this.options = options;
     }
 
-    public String[] getAnswers() {
-        return answers;
+    public String[] getOptions() {
+        return options;
     }
-    public String getLevel(){
-        return level;
+    public String getSkill(){
+        return skill;
     }
 
     public String getQuestion() {
@@ -78,6 +82,6 @@ public class QuizQuestion {
     }
 
     public String getCorrectAnswer() {
-        return answers[correctAnswerIndex-1];
+        return options[correctAnswerIndex-1];
     }
 }
