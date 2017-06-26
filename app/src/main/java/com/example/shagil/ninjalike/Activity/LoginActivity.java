@@ -58,7 +58,9 @@ public class LoginActivity extends AppCompatActivity {
             //insert skill levels to local db
             insertSkills();
             //insert questions to local db
-            QuizQuestions.insertQuestions(this);
+            //QuizQuestions.insertQuestions(this);
+            DatabaseHelper dbHelper=new DatabaseHelper(this);
+            dbHelper.insertQuestions();
             //change the value of key stored in sharedPef
             editor=sharedPreferences.edit();
             editor.putBoolean("AlreadyHere",true);

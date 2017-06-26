@@ -77,33 +77,9 @@ public class ChooseSkillsActivity extends AppCompatActivity {
             while(iterator.hasNext())
             Log.v("checkBox",String.valueOf(iterator.next()));
             dbHelper.createTempQuestionTable(selectedStrings);
-            /*
-            RadioButton radioButton;
-            int selectedId =rg.getCheckedRadioButtonId();
 
-            radioButton = (RadioButton) findViewById(selectedId);
-            if (radioButton != null) {
-                skill=radioButton.getText().toString();
-                //create table that have an account of questions solved or unsolved state
-                initializeTables(skill,dbHelper);
-
-                //check for the unsolved questions. if exist then continue to quiz else create a prompt to reset the score and play again.
-                boolean haveQuestions=dbHelper.checkUnsolved(skill);
-                if (haveQuestions) {
-                    Intent intent = new Intent(ChooseSkillsActivity.this, QuizActivity.class);
-                    startActivity(intent);
-                    finish();
-                }else{
-                    createAlertDialog();
-
-                    Toast.makeText(getApplicationContext(),"Solved all Questions",Toast.LENGTH_SHORT).show();
-                }
+            startActivity(new Intent(ChooseSkillsActivity.this,LevelActivity.class));
             }
-            else
-                Toast.makeText(getApplicationContext(),"Please Select an Option",Toast.LENGTH_SHORT).show();
-
-
-        */}
     };
 
     private void createAlertDialog() {
@@ -136,10 +112,6 @@ public class ChooseSkillsActivity extends AppCompatActivity {
         leftMargin=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         leftMargin.leftMargin=50;
 
-        //rg=new RadioGroup(ChooseSkillsActivity.this);
-        //radioButton1 = new RadioButton(ChooseSkillsActivity.this);
-        //rg.setOrientation(LinearLayout.VERTICAL);
-
         for (int i=0;i<levels.length;i++) {
             String url="skillCheckBox"+(i);
             checkBox=new CheckBox(getApplicationContext());
@@ -156,22 +128,7 @@ public class ChooseSkillsActivity extends AppCompatActivity {
                         selectedStrings.remove(compoundButton.getText().toString());
                 }
             });
-            //checkBox.setTag(url);
-            //setting radio buttons in disabled state
-            /*radioButton1.setEnabled(false);
-            //setting the first skill level radio button enabled initially
-            if (i==0)
-                radioButton1.setEnabled(true);
-            //setting next skill level radio button enabled depending upon the achievement of previous level
-            if (i<=achievedLevelCount)
-                radioButton1.setEnabled(true);
-            rg.addView(radioButton1,leftMargin);
-            Log.v("RBid",String.valueOf(radioButton1.getTag()));*/
-
         }
-
-        //adding the radio buttons to UI
-      //  ((ViewGroup)findViewById(R.id.radiogroup)).addView(rg);
     }
 
     @Override

@@ -69,7 +69,8 @@ public class SkillsDbHelper extends DatabaseHelper {
                     String[] options = {option1, option2, option3, option4};
                     quizQuestion.setOptions(options);
                     quizQuestionList.add(quizQuestion);
-                }while (c1.moveToNext());
+                }
+                while (c1.moveToNext());
             }while (c.moveToNext());
 
         }

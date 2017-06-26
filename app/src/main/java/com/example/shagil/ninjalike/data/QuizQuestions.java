@@ -127,8 +127,7 @@ public class QuizQuestions {
                 feedItems.add(item);
                 Log.v("FeedItems",feedItems.toString());
             }
-            DatabaseHelper dbHelper=new DatabaseHelper(loginActivityy);
-            dbHelper.insertQuestions(feedItems);
+
 
         }catch (JSONException e){
             e.printStackTrace();

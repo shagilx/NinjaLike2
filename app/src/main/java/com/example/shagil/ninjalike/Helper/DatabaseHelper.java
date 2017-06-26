@@ -68,7 +68,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             SKILLS+" TEXT,"+LEVEL+" TEXT, "+"FOREIGN KEY ("+SKILLS+") REFERENCES "+SKILLS_TABLE+" ("+SKILLS+")"+")";
     protected static final String TABLE_OPTIONS_TABLE="CREATE TABLE IF NOT EXISTS "+OPTIONS_TABLE+" ("+QID+" INTEGER PRIMARY KEY AUTOINCREMENT,"+OPTION1+" TEXT,"+
             OPTION2+" TEXT,"+OPTION3+" TEXT,"+OPTION4+" TEXT, "+"FOREIGN KEY ("+QID+") REFERENCES "+QUESTIONS_TABLE+" ("+QID+")"+")";
-    protected static final String TABLE_CORRECT_ANS="CREATE TABLE IF NOT EXISTS "+CORRECT_ANS_TABLE+" ("+QID+" TEXT ,"+CORRECTANS+" TEXT, "+"FOREIGN KEY ("+QID+") REFERENCES "+QUESTIONS_TABLE+" ("+QID+")"+")";
+    protected static final String TABLE_CORRECT_ANS="CREATE TABLE IF NOT EXISTS "+CORRECT_ANS_TABLE+" ("+QID+" INTEGER ,"+CORRECTANS+" TEXT, "+"FOREIGN KEY ("+QID+") REFERENCES "+QUESTIONS_TABLE+" ("+QID+")"+")";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -196,25 +196,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return questionList;
     }
 
-    public void insertQuestions(List<FeedItem> feedItems) {
-        for (int j=0;j<QuizQuestions.skills.length;j++) {
+    public void insertQuestions() {
+        SQLiteDatabase db = this.getWritableDatabase();
 
             QuizQuestions quizQuestions = new QuizQuestions();
             List<QuizQuestion> quizQuestionsList = quizQuestions.getQuizQuestions();
 
-            SQLiteDatabase db = this.getWritableDatabase();
+
             ContentValues cv = new ContentValues();
             ContentValues cv1 = new ContentValues();
             ContentValues correctAnswers=new ContentValues();
             for (int i = 0; i < quizQuestionsList.size(); i++) {
                 cv.put(QID, i);
                 cv.put(QUESTION, quizQuestionsList.get(i).getQuestion());
+                Log.v("correct",quizQuestionsList.get(i).getCorrectAnswer());
+                correctAnswers.put(QID,i);
                 correctAnswers.put(CORRECTANS, quizQuestionsList.get(i).getCorrectAnswer());
 
-                cv.put(SKILLS, QuizQuestions.skills[j]);
+                cv.put(SKILLS, quizQuestionsList.get(i).getSkill());
+                cv.put(LEVEL,quizQuestionsList.get(i).getLevel());
 
                 String[] options = quizQuestionsList.get(i).getOptions();
                 cv1.put(QID, i);
+                Log.v("qid",String.valueOf(i));
                 cv1.put(OPTION1, options[0]);
                 Log.v("option1", options[0]);
 
@@ -233,9 +237,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             }
 
-            db.close();
+        db.close();
         }
-    }
+
+
 
 
 
@@ -338,13 +343,96 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     public void createTempQuestionTable(ArrayList<String> selectedStrings) {
-        String dropTable="DROP TABLE IF EXISTS "+TEMP_QUESTION_TABLE;
+        String dropTable="DROP TABLE IF EXISTS '"+TEMP_QUESTION_TABLE+"'";
         SQLiteDatabase db=this.getWritableDatabase();
-        db.execSQL(dropTable,null);
+        db.execSQL(dropTable);
 
         String createTable="CREATE TABLE IF NOT EXISTS "+TEMP_QUESTION_TABLE+"("+QID+" INTEGER ,"+QUESTION+" TEXT,"+
                 SKILLS+" TEXT,"+LEVEL+" TEXT, "+"FOREIGN KEY ("+SKILLS+") REFERENCES "+SKILLS_TABLE+" ("+SKILLS+")"+")";
-        db.execSQL(createTable,null);
+        db.execSQL(createTable);
 
+        String skills=android.text.TextUtils.join("','",selectedStrings);
+        Log.v("skills",skills);
+        String getQuestions="SELECT "+QID+","+QUESTION+","+SKILLS+","+LEVEL+" FROM "+QUESTIONS_TABLE+" WHERE "+SKILLS+" IN ('"+skills+"')";
+        ContentValues quesConentValues=new ContentValues();
+        Cursor cursor=db.rawQuery(getQuestions,null);
+        if (cursor.moveToFirst())
+            do {
+                quesConentValues.put(QID,cursor.getString(0));
+
+                quesConentValues.put(QUESTION,cursor.getString(1));
+
+                quesConentValues.put(SKILLS,cursor.getString(2));
+                Log.v("skill",cursor.getString(2));
+                quesConentValues.put(LEVEL,cursor.getString(3));
+                Log.v("level",""+cursor.getString(3));
+
+                db.insert(TEMP_QUESTION_TABLE,null,quesConentValues);
+            }while (cursor.moveToNext());
+    }
+
+    public String[] getLevels(String selectedSkill) {
+        String getlevel="SELECT DISTINCT "+LEVEL+" FROM "+TEMP_QUESTION_TABLE+" WHERE "+SKILLS+" = '"+selectedSkill+"'";
+        SQLiteDatabase db=this.getReadableDatabase();
+        Cursor c=db.rawQuery(getlevel,null);
+        String[] level=new String[c.getCount()];
+        int i=0;
+        if (c.moveToFirst()){
+            do{
+                level[i++]=c.getString(0);
+
+            }while (c.moveToNext());
+        }
+        db.close();
+        return level;
+    }
+    public List<String> getTempSkills(){
+        String getSkills="SELECT DISTINCT "+SKILLS+" FROM "+TEMP_QUESTION_TABLE;
+        SQLiteDatabase db=this.getReadableDatabase();
+        Cursor c=db.rawQuery(getSkills,null);
+        List<String> skills=new ArrayList<>();
+
+        if (c.moveToFirst())
+            do{
+                skills.add(c.getString(0));
+            }while (c.moveToNext());
+        return skills;
+    }
+
+    public List<QuizQuestion> getQuestionOfLevel(String skill, String level) {
+        String getQuestion="SELECT * FROM "+QUESTIONS_TABLE+" WHERE "+SKILLS+" = '"+skill+"' AND "+LEVEL+" = '"+level+"'";
+        SQLiteDatabase db=this.getReadableDatabase();
+        Cursor questionCursor=db.rawQuery(getQuestion,null);
+        List<QuizQuestion> quizQuestionList=new ArrayList<>();
+
+        if (questionCursor.moveToFirst())
+            do{
+                QuizQuestion quizQuestion=new QuizQuestion();
+                quizQuestion.setQid(questionCursor.getInt(0));
+                quizQuestion.setQuestion(questionCursor.getString(1));
+                Log.v("ques",questionCursor.getString(1));
+                quizQuestion.setSkill(questionCursor.getString(2));
+                quizQuestion.setLevel(questionCursor.getString(3));
+                String getCorrectAnswer="SELECT "+CORRECTANS+" FROM "+CORRECT_ANS_TABLE+" WHERE "+QID+" = "+questionCursor.getInt(0);
+                Cursor correctAnsCursor=db.rawQuery(getCorrectAnswer,null);
+                String[] correctAnswers=new String[correctAnsCursor.getCount()];
+                Log.v("correctCursor",String.valueOf(correctAnsCursor.getCount()));
+                int i=0;
+                if (correctAnsCursor.moveToFirst())
+
+                    do{
+                        correctAnswers[i++]=correctAnsCursor.getString(0);
+                    }while (correctAnsCursor.moveToNext());
+                quizQuestion.setCorrectAnswer(correctAnswers);
+                String getOptions="SELECT * FROM "+ OPTIONS_TABLE+" WHERE "+QID+" = "+questionCursor.getInt(0);
+                Cursor OptionsCursor=db.rawQuery(getOptions,null);
+                if (OptionsCursor.moveToFirst()){
+                    String[] options = {OptionsCursor.getString(1), OptionsCursor.getString(2), OptionsCursor.getString(3), OptionsCursor.getString(4)};
+                    quizQuestion.setOptions(options);
+                }
+                quizQuestionList.add(quizQuestion);
+            }while (questionCursor.moveToNext());
+        Log.v("size",String.valueOf(quizQuestionList.size()));
+        return quizQuestionList;
     }
 }
