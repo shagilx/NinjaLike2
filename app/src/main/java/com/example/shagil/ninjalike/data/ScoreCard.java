@@ -6,25 +6,16 @@ package com.example.shagil.ninjalike.data;
 
 public class ScoreCard {
     String skill;
-    int solved;
-    int unsolved;
-    int score;
     String level;
+    int score;
 
-    public ScoreCard(String skill, int solved, int unsolved, int score) {
+    public ScoreCard(String skill,String level, int score) {
         this.skill = skill;
-        this.solved = solved;
-        this.unsolved = unsolved;
+        this.level=level;
         this.score = score;
     }
 
-    public String getLevel() {
-        return level;
-    }
 
-    public void setLevel(String level) {
-        this.level = level;
-    }
 
     public int getScore() {
         return score;
@@ -42,20 +33,12 @@ public class ScoreCard {
         this.skill = skill;
     }
 
-    public int getSolved() {
-        return solved;
+    public String getLevel() {
+        return level;
     }
 
-    public void setSolved(int solved) {
-        this.solved = solved;
-    }
-
-    public int getUnsolved() {
-        return unsolved;
-    }
-
-    public void setUnsolved(int unsolved) {
-        this.unsolved = unsolved;
+    public void setLevel(String level) {
+        this.level = level;
     }
 
     public ScoreCard() {

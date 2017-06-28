@@ -32,18 +32,19 @@ public class QuizActivity extends AppCompatActivity {
     Button submitButton;
     List<QuizQuestion> quizQuestionList;
     CheckBox option1,option2,option3,option4;
-    String skill;
+    static String skill;
     FragmentManager fm=getSupportFragmentManager();
     DatabaseHelper dbHelper=new DatabaseHelper(this);
     static Iterator<QuizQuestion> iterator;
     ArrayList<String> selectedOptions = new ArrayList<String>();
-
+    int totalScore=0,userScore=0;
+    String level;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
-        skill=LevelActivity.skill;
-        String level=getIntent().getStringExtra("level");
+        skill=getIntent().getStringExtra("skill");
+        level=getIntent().getStringExtra("level");
         qno = (TextView) findViewById(R.id.qno);
         question = (TextView) findViewById(R.id.textView6);
         submitButton = (Button) findViewById(R.id.button);
@@ -55,21 +56,28 @@ public class QuizActivity extends AppCompatActivity {
         quizQuestionList=dbHelper.getQuestionOfLevel(skill,level);
         iterator=quizQuestionList.iterator();
         Log.v("listsize",String.valueOf(quizQuestionList.size()));
-
+        totalScore=4*quizQuestionList.size();
 
 
         try{
             getNextQuestion(iterator.next());
+
         }catch(NoSuchElementException e){
             Toast.makeText(getApplicationContext()," ",Toast.LENGTH_SHORT).show();
         }
-        //List to store the question ID of unsolved questions
-
-        //get unsolved questions
-
     }
 
+
     private void getNextQuestion(final QuizQuestion next) {
+        selectedOptions.clear();
+        if (option1.isChecked())
+            option1.setChecked(false);
+        if (option2.isChecked())
+            option2.setChecked(false);
+        if (option3.isChecked())
+            option3.setChecked(false);
+        if (option4.isChecked())
+            option4.setChecked(false);
 
         qno.setText(String.valueOf(next.getQid() + 1));
         question.setText(next.getQuestion());
@@ -81,22 +89,51 @@ public class QuizActivity extends AppCompatActivity {
         option2.setOnCheckedChangeListener(new getAnswerListener());
         option3.setOnCheckedChangeListener(new getAnswerListener());
         option4.setOnCheckedChangeListener(new getAnswerListener());
-
+        Log.v("correct",String.valueOf(selectedOptions.size()));
             submitButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (Arrays.asList(next.getLocalCorrectAnswer()).containsAll(selectedOptions)) {
                         Toast.makeText(getApplicationContext(), "true", Toast.LENGTH_SHORT).show();
-                        getNextQuestion(iterator.next());
+                        userScore+=4;
+                        try {
+                            getNextQuestion(iterator.next());
+                        }catch (NoSuchElementException e){
+                            checkScore(userScore);
+                            Intent intent=new Intent(QuizActivity.this,ScoreTable.class);
+                            intent.putExtra("level",level);
+                            startActivity(intent);
+                            finish();
+                        }
+
                     }
                     else {
                         Toast.makeText(getApplicationContext(),"false",Toast.LENGTH_SHORT).show();
+                        userScore-=1;
+                        try {
+                            getNextQuestion(iterator.next());
+                        }catch (NoSuchElementException e){
+                            checkScore(userScore);
+                            Intent intent=new Intent(QuizActivity.this,ScoreTable.class);
+                            intent.putExtra("level",level);
+                            startActivity(intent);
+                            finish();
+                        }
+
                     }
                 }
             });
 
         }
 
+    private void checkScore(int userScore) {
+        if (userScore==totalScore){
+            DatabaseHelper dbHelper=new DatabaseHelper(this);
+            dbHelper.insertScore(skill,level,userScore,"true");
+        }else{
+            dbHelper.insertScore(skill,level,userScore,"false");
+        }
+    }
 
     private class getAnswerListener implements CompoundButton.OnCheckedChangeListener {
         @Override
@@ -119,9 +156,7 @@ public class QuizActivity extends AppCompatActivity {
                     selectedOptions.remove(buttonView.getText().toString());
                 if (buttonView==option4)
                     selectedOptions.remove(buttonView.getText().toString());
-
             }
-
         }
     }
 }

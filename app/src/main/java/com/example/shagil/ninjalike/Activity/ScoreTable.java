@@ -10,46 +10,44 @@ import android.widget.TextView;
 
 import com.example.shagil.ninjalike.Helper.DatabaseHelper;
 import com.example.shagil.ninjalike.R;
+import com.example.shagil.ninjalike.data.QuizQuestion;
 import com.example.shagil.ninjalike.data.ScoreCard;
 
 /*Activity class to show the score
 * */
 
 public class ScoreTable extends AppCompatActivity {
-    String skill;
-    TextView skillTV,score,solved,unsolved;
+    String skill,level;
+    TextView skillTV,score,levelTV;
     Button playAgain, mainMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_score_table);
-        skill= ChooseSkillsActivity.skill;
+        skill= QuizActivity.skill;
+        level=getIntent().getStringExtra("level");
         skillTV=(TextView)findViewById(R.id.skillTV);
-        score=(TextView)findViewById(R.id.scoreTV);
-        solved=(TextView)findViewById(R.id.solvedTV);
-        unsolved=(TextView)findViewById(R.id.unsolvedTV);
+        score=(TextView)findViewById(R.id.score_TV);
+        levelTV=(TextView)findViewById(R.id.level_TV);
+
         playAgain=(Button)findViewById(R.id.playagain);
         mainMenu=(Button)findViewById(R.id.mainmenu);
 
 
         DatabaseHelper dbHelper=new DatabaseHelper(this);
-        ScoreCard scoreCard= dbHelper.getScores(skill);
+        ScoreCard scoreCard= dbHelper.getScores(skill,level);
 
         skillTV.setText(scoreCard.getSkill());
-        Log.v("Skill",scoreCard.getSkill());
+
         score.setText(String.valueOf(scoreCard.getScore()));
-        Log.v("Score",String.valueOf(scoreCard.getScore()));
-        solved.setText(String.valueOf(scoreCard.getSolved()));
-        unsolved.setText(String.valueOf(scoreCard.getUnsolved()));
-        if (scoreCard.getUnsolved()==0){
-            dbHelper.setAchievedLevel(skill);
-        }
+
+        levelTV.setText(scoreCard.getLevel());
 
         playAgain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(ScoreTable.this,QuizActivity.class);
+                Intent intent=new Intent(ScoreTable.this,LevelActivity.class);
                 startActivity(intent);
                 finish();
             }

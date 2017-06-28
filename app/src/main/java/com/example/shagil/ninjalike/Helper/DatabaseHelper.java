@@ -272,7 +272,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void createScoreTable(String userName) {
        // String createTable="DROP TABLE `"+LoginActivity.userName+"_score`";
-        String createTable="CREATE TABLE IF NOT EXISTS `"+userName+"_score` ( skill text, level text, score integer, solved integer, unsolved integer,primary key (skill, level) )";
+        String createTable="CREATE TABLE IF NOT EXISTS `"+userName+"_score` ("+ SKILLS +" text, "+LEVEL+" text, score integer, completed text )";
+        Log.v("skill table",createTable);
         SQLiteDatabase db=this.getWritableDatabase();
         db.execSQL(createTable);
         Log.v("scoreTable","table created");
@@ -281,36 +282,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
 
-    public ScoreCard getScores(String skill) {
+    public ScoreCard getScores(String skill, String level) {
         SQLiteDatabase db=this.getReadableDatabase();
-        String getCount="SELECT COUNT(solved) from `"+LoginActivity.userName+"_"+skill+"` where solved= 'true'";
-
-        Cursor c1=db.rawQuery(getCount,null);
-        c1.moveToFirst();
-        int solved=c1.getInt(0);
-        c1.close();
-        String allCount= "SELECT COUNT ("+QID+") FROM `"+LoginActivity.userName+"_"+skill+"` ";
-        Cursor c2=db.rawQuery(allCount,null);
-        c2.moveToFirst();
-        int countAll=c2.getInt(0);
-        int unsolved=countAll-solved;
-        int score=(solved*4)-(unsolved*1);
-        c2.close();
-        String insertIntoTable="UPDATE `"+LoginActivity.userName+"_score` SET solved = "+solved+", unsolved = "+unsolved+", score = "+score+" where skill = '"+skill+"'";
-        db.execSQL(insertIntoTable);
-        String getScores="SELECT * FROM `"+LoginActivity.userName+"_score` where skill = '"+skill+"'";
-
-        Cursor c=db.rawQuery(getScores,null);
+        String getCount="SELECT * from `"+LoginActivity.userName+"_score` where "+SKILLS+" = '"+skill+"' and "+LEVEL+" = '"+level+"'";
+        Log.v("string",getCount);
+        Cursor c=db.rawQuery(getCount,null);
+        Log.v("count",String.valueOf(c.getCount()));
         ScoreCard scoreCard=new ScoreCard();
-        if (c.moveToFirst()){
+        c.moveToLast();
             scoreCard.setSkill(c.getString(0));
-            Log.v("String",c.getString(0));
-            scoreCard.setScore(c.getInt(1));
-            Log.v("String",c.getString(1));
-            scoreCard.setSolved(c.getInt(2));
-            Log.v("String",c.getString(2));
-            scoreCard.setUnsolved(c.getInt(3));
-        }
+            scoreCard.setLevel(c.getString(1));
+            scoreCard.setScore(c.getInt(2));
+
         c.close();
         return scoreCard;
 
@@ -434,5 +417,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }while (questionCursor.moveToNext());
         Log.v("size",String.valueOf(quizQuestionList.size()));
         return quizQuestionList;
+    }
+
+    public void insertScore(String skill, String level, int userScore, String isCompleted) {
+        SQLiteDatabase db=this.getWritableDatabase();
+        String insertScore="INSERT INTO `"+LoginActivity.userName+"_score` values ('"+skill+"', '"+level+"', "+userScore+", '"+isCompleted+"')";
+        db.execSQL(insertScore);
+        Log.v("score Insert","true");
+        db.close();
+    }
+
+    public int getLevelSolved(String skill) {
+        SQLiteDatabase db=this.getReadableDatabase();
+        String getCountLevel="SELECT COUNT(DISTINCT "+LEVEL+") from `"+LoginActivity.userName+"_score` where "+SKILLS+" = '"+skill+"' and completed = 'true'";
+        Cursor cursor=db.rawQuery(getCountLevel,null);
+        cursor.moveToFirst();
+        return cursor.getInt(0);
     }
 }
